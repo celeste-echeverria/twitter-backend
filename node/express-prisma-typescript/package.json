@@ -10,7 +10,8 @@
     "lint": "eslint --fix && pretty-quick && prisma format",
     "db:migrate": "prisma migrate deploy",
     "db:make-migrations": "prisma migrate dev",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "studio": "prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^4.9.0",
