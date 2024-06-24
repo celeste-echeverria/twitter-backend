@@ -5,4 +5,5 @@ import { FollowRepository } from "../repository";
 export class FollowServiceImpl implements FollowService {
     constructor(private readonly repository: FollowRepository) {}
 
+    async follow(followerId: string, followedId: string)
 }

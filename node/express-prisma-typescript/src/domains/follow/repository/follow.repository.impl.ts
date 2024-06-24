@@ -18,11 +18,11 @@ export class FollowRepositoryImpl implements FollowRepository{
         return new FollowDTO(follow)
     }
     
-    async unfollow(followerId: string, followeeId: string): Promise<void> {
+    async unfollow(followerId: string, followedId: string): Promise<void> {
         const follow = await this.db.follow.findFirst({
             where: {
                 followerId: followerId,
-                followedId: followeeId,
+                followedId: followedId,
             },
         });
     
@@ -59,11 +59,11 @@ export class FollowRepositoryImpl implements FollowRepository{
         return following.map(follow => new UserDTO(follow.followed));
     }
     
-    async isFollowing(followerId: string, followeeId: string): Promise<boolean> {
+    async isFollowing(followerId: string, followedId: string): Promise<boolean> {
         const follow = await this.db.follow.findFirst({
             where: {
                 followerId: followerId,
-                followedId: followeeId,
+                followedId: followedId,
             },
         });
     
