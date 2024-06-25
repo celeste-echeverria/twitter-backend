@@ -8,7 +8,7 @@ import { FollowDTO } from "../dto";
 export class FollowRepositoryImpl implements FollowRepository{
     constructor (private readonly db: PrismaClient) {}
 
-    async follow(followerId: string, followedId: string): Promise<FollowDTO> {
+    async create(followerId: string, followedId: string): Promise<FollowDTO> {
         const follow = await this.db.follow.create({
             data: {
                 followerId,
@@ -18,22 +18,13 @@ export class FollowRepositoryImpl implements FollowRepository{
         return new FollowDTO(follow)
     }
     
-    async unfollow(followerId: string, followedId: string): Promise<void> {
-        const follow = await this.db.follow.findFirst({
+    async delete(followId: string): Promise<void> {
+        const follow = await this.db.follow.delete({
             where: {
-                followerId: followerId,
-                followedId: followedId,
+                id: followId,
             },
         });
-    
-        if (follow) {
-            await this.db.follow.delete({
-                where: {
-                    id: follow.id,
-                },
-            });
-        }
-      }
+    }
     
     async getFollowers(userId: string, options: OffsetPagination): Promise<UserDTO[]> {
         const followers = await this.db.follow.findMany({
@@ -68,6 +59,16 @@ export class FollowRepositoryImpl implements FollowRepository{
         });
     
         return follow !== null;
+    }
+
+    async getFollowByUsersId(followerId: string, followedId: string): Promise <FollowDTO | null>{
+        const follow = await this.db.follow.findFirst({
+            where: {
+                followerId: followerId,
+                followedId: followedId
+            }
+        })
+        return (follow != null) ? new FollowDTO(follow) : null
     }
 
 }

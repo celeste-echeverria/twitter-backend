@@ -1,2 +1,2 @@
-export * from './follower.service'
-export * from './follower.service.impl'
+export * from './follow.service'
+export * from './follow.service.impl'

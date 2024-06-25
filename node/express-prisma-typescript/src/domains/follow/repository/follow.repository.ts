@@ -3,9 +3,10 @@ import { OffsetPagination } from "@types";
 import { FollowDTO } from "../dto";
 
 export interface FollowRepository {
-    follow: (followerId: string, followedId: string) => Promise<FollowDTO>;
-    unfollow: (followerId: string, followedId: string) => Promise<void>;
+    create: (followerId: string, followedId: string) => Promise<FollowDTO>;
+    delete: (followId: string,) => Promise<void>;
     getFollowers: (userId: string, options: OffsetPagination) => Promise<UserDTO[]>;
     getFollowing: (userId: string, options: OffsetPagination) => Promise<UserDTO[]>;
     isFollowing: (followerId: string, followedId: string) => Promise<boolean>;
+    getFollowByUsersId: (followerId: string, followedId: string) => Promise<FollowDTO | null>;
 } 
