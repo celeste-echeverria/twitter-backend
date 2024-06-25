@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express'
 import HttpStatus from 'http-status'
 
-//import 'express-async-errors'
+import 'express-async-errors'
 
 import { db } from '@utils'
 
@@ -14,9 +14,19 @@ export const followerRouter = Router();
 const service: FollowService = new FollowServiceImpl(new FollowRepositoryImpl(db))
 
 followerRouter.post('/follow/:userId', async (req: Request, res: Response) => {
-    return res.status(HttpStatus.OK)
+    const { userId: followerId } = res.locals.context
+    const { followedId } = req.params
+
+    await service.follow(followerId, followedId)
+
+    return res.status(HttpStatus.OK).send(`Followed user ${followedId}`)
 })
 
 followerRouter.post('/unfollow/:userId', async (req: Request, res: Response) => {
-    return res.status(HttpStatus.OK)
+    const { userId: followerId } = res.locals.context
+    const { followedId } = req.params
+
+    await service.unfollow(followerId, followedId)
+
+    return res.status(HttpStatus.OK).send(`Unfollowed user ${followedId}`)
 })

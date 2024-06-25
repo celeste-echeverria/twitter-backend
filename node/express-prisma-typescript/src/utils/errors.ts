@@ -36,6 +36,12 @@ export class NotFoundException extends HttpException {
   }
 }
 
+export class BadRequestException extends HttpException {
+  constructor (model?: string) {
+    super(HttpStatus.BAD_REQUEST, `Invalid ${model} operation.`)
+  }
+}
+
 export class ConflictException extends HttpException {
   constructor (errorCode?: string) {
     super(HttpStatus.CONFLICT, 'Conflict', { error_code: errorCode })
