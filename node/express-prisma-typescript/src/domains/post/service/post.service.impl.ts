@@ -1,12 +1,17 @@
 import { CreatePostInputDTO, PostDTO } from '../dto'
-import { PostRepository } from '../repository'
+import { PostRepository, PostRepositoryImpl } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
 import { ForbiddenException, NotFoundException } from '@utils'
+import { db } from '@utils/database'
 import { CursorPagination } from '@types'
+import { UserService, UserServiceImpl } from '@domains/user/service'
 
 export class PostServiceImpl implements PostService {
-  constructor (private readonly repository: PostRepository) {}
+  constructor (
+    private readonly repository: PostRepository = new PostRepositoryImpl(db), 
+    private readonly userService: UserService = new UserServiceImpl()
+  ) {}
 
   async createPost (userId: string, data: CreatePostInputDTO): Promise<PostDTO> {
     await validate(data)

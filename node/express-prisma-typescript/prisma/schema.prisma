@@ -28,9 +28,18 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
+  accTypeId Int  
+  accType   AccountType @relation(fields: [accTypeId], references: [id])
+  
   posts     Post[]
-  follows   Follow[] @relation(name: "follows")
-  followers Follow[] @relation(name: "followers")
+  follows   Follow[]      @relation(name: "follows")
+  followers Follow[]      @relation(name: "followers")
+}
+
+model AccountType {
+  id       Int     @id @default(autoincrement())
+  typeName String  @unique
+  users    User[]
 }
 
 model Follow {

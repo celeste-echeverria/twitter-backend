@@ -1,11 +1,12 @@
 import { NotFoundException } from '@utils/errors'
 import { OffsetPagination } from 'types'
 import { UserDTO } from '../dto'
-import { UserRepository } from '../repository'
+import { UserRepository, UserRepositoryImpl } from '../repository'
 import { UserService } from './user.service'
+import { db } from '@utils/database'
 
 export class UserServiceImpl implements UserService {
-  constructor (private readonly repository: UserRepository) {}
+  constructor (private readonly repository: UserRepository = new UserRepositoryImpl(db)) {}
 
   async getUser (userId: any): Promise<UserDTO> {
     const user = await this.repository.getById(userId)
