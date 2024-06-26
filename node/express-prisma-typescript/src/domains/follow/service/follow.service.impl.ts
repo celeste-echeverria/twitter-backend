@@ -1,11 +1,12 @@
 import { FollowService } from "./follow.service";
-import { FollowRepository } from "../repository";
-import { BadRequestException } from "@utils";
+import { FollowRepository, FollowRepositoryImpl } from "../repository";
+import { BadRequestException, db } from "@utils";
+import { FollowDTO } from "../dto";
 
 export class FollowServiceImpl implements FollowService {
-    constructor(private readonly repository: FollowRepository) {}
+    constructor(private readonly repository: FollowRepository = new FollowRepositoryImpl(db)) {}
 
-    async follow(followerId: string, followedId: string){
+    async follow(followerId: string, followedId: string): Promise <FollowDTO>{
         const follow = await this.repository.getFollowByUsersId(followerId, followedId);
         if (follow) {
             throw new BadRequestException('Follow')
@@ -13,11 +14,15 @@ export class FollowServiceImpl implements FollowService {
         return await this.repository.create(followerId, followedId)
     } 
 
-    async unfollow(followerId: string, followedId: string){
+    async unfollow(followerId: string, followedId: string): Promise<void>{
         const follow = await this.repository.getFollowByUsersId(followerId, followedId);
         if (!follow) {
             throw new BadRequestException('Unfollow')
         }
         await this.repository.delete(follow.id)
+    }
+
+    async userIsFollowing(followerId: string, followedId: string): Promise<boolean> {
+        return await this.repository.isFollowing(followerId, followedId)
     }
 }
