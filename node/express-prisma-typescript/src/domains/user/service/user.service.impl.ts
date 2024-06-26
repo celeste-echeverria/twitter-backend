@@ -54,4 +54,8 @@ export class UserServiceImpl implements UserService {
     return user.accTypeId == accType.id
   }
 
+  async setUserAccountType (userId: any, accTypeId: any) : Promise<UserDTO> {
+    return await this.userRepository.setAccountType(userId, accTypeId)
+  }
+
 }

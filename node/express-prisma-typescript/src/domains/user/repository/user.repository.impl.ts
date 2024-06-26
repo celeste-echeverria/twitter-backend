@@ -58,4 +58,16 @@ export class UserRepositoryImpl implements UserRepository {
     })
     return user ? new ExtendedUserDTO(user) : null
   }
+
+  async setAccountType (userId: any, accTypeId: any): Promise<UserDTO>{
+    const updatedUser = await this.db.user.update({
+      where: {
+        id : userId
+      },
+      data: {
+        accTypeId : accTypeId
+      }
+    })
+    return new UserDTO(updatedUser)
+  }
 }

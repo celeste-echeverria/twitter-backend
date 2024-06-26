@@ -1,6 +1,7 @@
 import { OffsetPagination } from '@types'
 import { ExtendedUserDTO, UserDTO } from '../dto'
 import { SignupInputDTO } from '@domains/auth/dto'
+import { User } from '@prisma/client'
 
 export interface UserService {
   createUser: (data: SignupInputDTO) => Promise<UserDTO>
@@ -9,4 +10,5 @@ export interface UserService {
   getUserByEmailOrUsername: (username?: string, email?: string) => Promise <ExtendedUserDTO>
   getUserRecommendations: (userId: any, options: OffsetPagination) => Promise<UserDTO[]>
   isPublic: (userId: any) => Promise<boolean>
+  setUserAccountType: (userId: any, accTypeId: any) => Promise<UserDTO>
 }
