@@ -34,6 +34,7 @@ export class PostServiceImpl implements PostService {
 
   async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
     // TODO: filter post search to return posts from authors that the user follows
+    const isPublic = await this
     return await this.repository.getAllByDatePaginated(options)
   }
 

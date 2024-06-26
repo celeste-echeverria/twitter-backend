@@ -28,7 +28,7 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
-  accTypeId Int  
+  accTypeId String    @db.Uuid 
   accType   AccountType @relation(fields: [accTypeId], references: [id])
   
   posts     Post[]
@@ -37,7 +37,7 @@ model User {
 }
 
 model AccountType {
-  id       Int     @id @default(autoincrement())
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key 
   typeName String  @unique
   users    User[]
 }

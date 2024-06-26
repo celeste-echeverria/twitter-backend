@@ -1,8 +1,12 @@
 import { OffsetPagination } from '@types'
-import { UserDTO } from '../dto'
+import { ExtendedUserDTO, UserDTO } from '../dto'
+import { SignupInputDTO } from '@domains/auth/dto'
 
 export interface UserService {
+  createUser: (data: SignupInputDTO) => Promise<UserDTO>
   deleteUser: (userId: any) => Promise<void>
   getUser: (userId: any) => Promise<UserDTO>
+  getUserByEmailOrUsername: (username?: string, email?: string) => Promise <ExtendedUserDTO>
   getUserRecommendations: (userId: any, options: OffsetPagination) => Promise<UserDTO[]>
+  isPublic: (userId: any) => Promise<boolean>
 }
