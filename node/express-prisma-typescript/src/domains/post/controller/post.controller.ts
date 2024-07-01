@@ -3,7 +3,7 @@ import HttpStatus from 'http-status'
 // express-async-errors is a module that handles async errors in express, don't forget import it in your new controllers
 import 'express-async-errors'
 
-import { db, BodyValidation } from '@utils'
+import { db, BodyValidation, NotFoundException } from '@utils'
 
 import { PostRepositoryImpl } from '../repository'
 import { PostService, PostServiceImpl } from '../service'
@@ -29,6 +29,9 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
 
   const post = await service.getPost(userId, postId)
 
+  const visible = await service.canAccessUsersPosts(userId, post.authorId)
+  if (!visible) throw new NotFoundException('Post')
+
   return res.status(HttpStatus.OK).json(post)
 })
 
@@ -36,7 +39,11 @@ postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { userId: authorId } = req.params
 
+  const visible = await service.canAccessUsersPosts(userId, authorId)
+  if (!visible) throw new NotFoundException('Posts')
+
   const posts = await service.getPostsByAuthor(userId, authorId)
+  
 
   return res.status(HttpStatus.OK).json(posts)
 })

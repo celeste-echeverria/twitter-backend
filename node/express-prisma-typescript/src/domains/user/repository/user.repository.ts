@@ -9,4 +9,5 @@ export interface UserRepository {
   getById: (userId: any) => Promise<UserDTO | null>
   getByEmailOrUsername: (email?: string, username?: string) => Promise<ExtendedUserDTO | null>
   setAccountType: (userId: any, accTypeId: any) => Promise<UserDTO>
+  getUsersIdsByAccType: (accTypeId: string) => Promise <string[]>
 }

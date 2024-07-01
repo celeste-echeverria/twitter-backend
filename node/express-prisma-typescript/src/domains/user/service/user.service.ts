@@ -11,4 +11,5 @@ export interface UserService {
   getUserRecommendations: (userId: any, options: OffsetPagination) => Promise<UserDTO[]>
   isPublic: (userId: any) => Promise<boolean>
   setUserAccountType: (userId: any, accTypeId: any) => Promise<UserDTO>
+  getPublicUsersIds: () => Promise<string[]>
 }

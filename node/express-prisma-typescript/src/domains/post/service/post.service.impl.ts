@@ -28,30 +28,38 @@ export class PostServiceImpl implements PostService {
   }
 
   async getPost (userId: string, postId: string): Promise<PostDTO> {
-    // TODO: validate that the author has public profile or the user follows the author
     const post = await this.repository.getById(postId)
     if (!post) throw new NotFoundException('post')
 
-    const canAccess = await this.canAccessPost(userId, post)
+    const canAccess = await this.canAccessUsersPosts(userId, post.authorId)
     if (!canAccess) throw new UnauthorizedException('You do not have access to this post')
     return post
   }
 
   async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
-    // TODO: filter post search to return posts from authors that the user follows
-    return await this.repository.getAllByDatePaginated(options)
+    //Gets id of all authors followed by user
+    const followedAuthorIds = await this.followService.getFollowedUsersId(userId)
+    //Gets id of all public users
+    const publicAuthorIds = await this.userService.getPublicUsersIds()
+
+    //Combines public and followed authors
+    const visibleAuthorIdsSet = new Set([...followedAuthorIds, ...publicAuthorIds]);
+    const visibleAuthorIds = Array.from(visibleAuthorIdsSet)
+    return await this.repository.getAllByDatePaginated(visibleAuthorIds, options)
   }
 
   async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
-    // TODO: throw exception when the author has a private profile and the user doesn't follow them
+    const canAccess = await this.canAccessUsersPosts(userId, authorId)
+    if (!canAccess) throw new UnauthorizedException('You do not have access to this post')
+    
     return await this.repository.getByAuthorId(authorId)
   }
 
-  async canAccessPost (userId: string, post: PostDTO): Promise <boolean>{
-    const publicAccount = (await this.userService.isPublic(post.authorId))
+  async canAccessUsersPosts (userId: string, authorId: string): Promise <boolean>{
+    const publicAccount = (await this.userService.isPublic(authorId))
     if (publicAccount) {
       return true
     }
-    return await this.followService.userIsFollowing(userId, post.authorId)
+    return await this.followService.userIsFollowing(userId, authorId)
   }
 }

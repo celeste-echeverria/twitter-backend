@@ -25,4 +25,8 @@ export class FollowServiceImpl implements FollowService {
     async userIsFollowing(followerId: string, followedId: string): Promise<boolean> {
         return await this.repository.isFollowing(followerId, followedId)
     }
+
+    async getFollowedUsersId(followerId: string): Promise <string[]>{
+        return await this.repository.getFollowedUsersIds(followerId)
+    }
 }

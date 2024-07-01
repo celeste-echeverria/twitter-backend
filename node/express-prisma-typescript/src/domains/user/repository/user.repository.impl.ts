@@ -70,4 +70,13 @@ export class UserRepositoryImpl implements UserRepository {
     })
     return new UserDTO(updatedUser)
   }
+
+  async getUsersIdsByAccType(accTypeId: string): Promise <string[]>{
+    const users = await this.db.user.findMany({
+      where: {
+        accTypeId: accTypeId
+      },
+    })
+    return users.map(user => user.id);
+  }
 }

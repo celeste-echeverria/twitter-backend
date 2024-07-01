@@ -18,15 +18,31 @@ export class AuthServiceImpl implements AuthService {
   ) {}
 
   async signup (data: SignupInputDTO): Promise<TokenDTO> {
-    const existingUser = await this.userService.getUserByEmailOrUsername(data.email, data.username)
+    let existingUser
+    try{
+
+      existingUser = await this.userService.getUserByEmailOrUsername(data.email, data.username)
+    
+    } catch (error) {
+
+      if (error instanceof NotFoundException) {
+        existingUser = null;
+      } else {
+        throw error; 
+      }
+      
+    }
+    
     if (existingUser) throw new ConflictException('USER_ALREADY_EXISTS')
 
     const encryptedPassword = await encryptPassword(data.password)
 
     const user = await this.userService.createUser({ ...data, password: encryptedPassword })
+
     const token = generateAccessToken({ userId: user.id })
 
     return { token }
+    
   }
 
   async login (data: LoginInputDTO): Promise<TokenDTO> {
@@ -34,7 +50,7 @@ export class AuthServiceImpl implements AuthService {
     if (!user) throw new NotFoundException('user')
 
     const isCorrectPassword = await checkPassword(data.password, user.password)
-
+    
     if (!isCorrectPassword) throw new UnauthorizedException('INCORRECT_PASSWORD')
 
     const token = generateAccessToken({ userId: user.id })

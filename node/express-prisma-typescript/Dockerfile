@@ -1,5 +1,5 @@
 # Install dependencies
-FROM node:18-alpine AS deps
+FROM --platform=linux/x86_64 node:18-alpine AS deps
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ COPY yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 # Build source code
-FROM node:18-alpine AS builder
+FROM --platform=linux/x86_64 node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN yarn db:generate
 RUN yarn build
 
 # Production runtime
-FROM node:18-alpine AS runner
+FROM --platform=linux/x86_64 node:18-alpine AS runner
 
 WORKDIR /app
 
@@ -33,7 +33,7 @@ EXPOSE 8080
 CMD yarn prod
 
 # Development runtime
-FROM node:18-alpine AS dev
+FROM --platform=linux/x86_64 node:18-alpine AS dev
 
 WORKDIR /app
 

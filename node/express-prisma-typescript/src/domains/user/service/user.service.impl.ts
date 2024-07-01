@@ -26,6 +26,7 @@ export class UserServiceImpl implements UserService {
   async getUserByEmailOrUsername (username?: string, email?: string): Promise<ExtendedUserDTO>{
     const user = await this.userRepository.getByEmailOrUsername(username, email)
     if (!user) throw new NotFoundException('User')
+
     return user
   }
 
@@ -56,6 +57,13 @@ export class UserServiceImpl implements UserService {
 
   async setUserAccountType (userId: any, accTypeId: any) : Promise<UserDTO> {
     return await this.userRepository.setAccountType(userId, accTypeId)
+  }
+
+  async getPublicUsersIds (): Promise <string[]> {
+    const accType = await this.accTypeService.getAccTypeByTypeName('Public')
+    if (!accType) throw new NotFoundException('Account Type')
+
+    return await this.userRepository.getUsersIdsByAccType(accType.id)
   }
 
 }
