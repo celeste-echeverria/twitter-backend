@@ -1,1 +1,0 @@
-//export * from './accType.controller'

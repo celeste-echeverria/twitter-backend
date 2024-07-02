@@ -6,7 +6,7 @@ import { UserRepository, UserRepositoryImpl } from '../repository'
 import { UserService } from './user.service'
 import { db } from '@utils/database'
 import { AccTypeService } from '@domains/accountType/services'
-import { AccTypeServiceImpl } from '@domains/accountType/services/accType.service.imp'
+import { AccTypeServiceImpl } from '@domains/accountType/services/accType.service.impl'
 import { SignupInputDTO } from '@domains/auth/dto'
 
 export class UserServiceImpl implements UserService {

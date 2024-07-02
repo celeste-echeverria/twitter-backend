@@ -28,12 +28,15 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
-  accTypeId String    @db.Uuid 
+  accTypeId String    @db.Uuid // Foreign Key
   accType   AccountType @relation(fields: [accTypeId], references: [id])
   
   posts     Post[]
   follows   Follow[]      @relation(name: "follows")
   followers Follow[]      @relation(name: "followers")
+
+  reactions Reaction[]
+
 }
 
 model AccountType {
@@ -45,8 +48,8 @@ model AccountType {
 model Follow {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
 
-  followerId String @db.Uuid()
-  followedId String @db.Uuid()
+  followerId String @db.Uuid() // Foreign Key
+  followedId String @db.Uuid() // Foreign Key
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -71,4 +74,30 @@ model Post {
   deletedAt DateTime? // Optional value
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+
+  reactions Reaction[]
+}
+
+model ReactionType {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  typeName String @unique
+  reactions Reaction[]
+}
+
+model Reaction {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime? // Optional 
+  
+  userId      String   @db.Uuid // Foreign Key
+  postId      String   @db.Uuid // Foreign Key
+  reactionTypeId String @db.Uuid // Foreign Key
+
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade) // Many to one
+  post  Post         @relation(fields: [postId], references: [id], onDelete: Cascade) // Many to one
+  reactionType ReactionType @relation(fields: [reactionTypeId], references: [id], onDelete: Cascade) // Many to one
+
+  @@unique([userId, postId, reactionTypeId]) // Unique constraint on the combination of userId, postId, and reactionTypeId
 }

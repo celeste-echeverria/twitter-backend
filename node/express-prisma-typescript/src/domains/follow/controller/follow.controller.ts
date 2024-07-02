@@ -8,12 +8,12 @@ import { db } from '@utils'
 import { FollowRepositoryImpl } from '../repository'
 import { FollowService, FollowServiceImpl } from '../service'
 
-export const followerRouter = Router();
+export const followRouter = Router();
 
 // Use dependency injection
 const service: FollowService = new FollowServiceImpl(new FollowRepositoryImpl(db))
 
-followerRouter.post('/follow/:userId', async (req: Request, res: Response) => {
+followRouter.post('/follow/:userId', async (req: Request, res: Response) => {
     const { userId: followerId } = res.locals.context
     const { followedId } = req.params
 
@@ -22,7 +22,7 @@ followerRouter.post('/follow/:userId', async (req: Request, res: Response) => {
     return res.status(HttpStatus.OK).send(`Followed user ${followedId}`)
 })
 
-followerRouter.post('/unfollow/:userId', async (req: Request, res: Response) => {
+followRouter.post('/unfollow/:userId', async (req: Request, res: Response) => {
     const { userId: followerId } = res.locals.context
     const { followedId } = req.params
 

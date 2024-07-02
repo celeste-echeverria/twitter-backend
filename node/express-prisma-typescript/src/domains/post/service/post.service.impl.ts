@@ -2,7 +2,7 @@ import { CreatePostInputDTO, PostDTO } from '../dto'
 import { PostRepository, PostRepositoryImpl } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
-import { ForbiddenException, NotFoundException, UnauthorizedException } from '@utils'
+import { ForbiddenException, NotFoundException } from '@utils'
 import { db } from '@utils/database'
 import { CursorPagination } from '@types'
 import { UserService, UserServiceImpl } from '@domains/user/service'
@@ -32,7 +32,7 @@ export class PostServiceImpl implements PostService {
     if (!post) throw new NotFoundException('post')
 
     const canAccess = await this.canAccessUsersPosts(userId, post.authorId)
-    if (!canAccess) throw new UnauthorizedException('You do not have access to this post')
+    if (!canAccess) throw new NotFoundException('Post')
     return post
   }
 
@@ -50,12 +50,16 @@ export class PostServiceImpl implements PostService {
 
   async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
     const canAccess = await this.canAccessUsersPosts(userId, authorId)
-    if (!canAccess) throw new UnauthorizedException('You do not have access to this post')
+    if (!canAccess) throw new NotFoundException('Posts')
     
     return await this.repository.getByAuthorId(authorId)
   }
 
   async canAccessUsersPosts (userId: string, authorId: string): Promise <boolean>{
+    if (userId == authorId) {
+      return true
+    }
+  
     const publicAccount = (await this.userService.isPublic(authorId))
     if (publicAccount) {
       return true

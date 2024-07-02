@@ -11,6 +11,10 @@ export class AccTypeServiceImpl implements AccTypeService{
         return await this.repository.create(accTypeName)  
     }
 
+    async deleteAccType (accTypeId: string) : Promise <void> {
+        await this.repository.delete(accTypeId)
+    }
+
     async getAccTypeById (accTypeId: string): Promise<AccountTypeDTO> {
         const accType = await this.repository.getById(accTypeId)
         if (!accType) throw new NotFoundException('Account Type')
@@ -21,6 +25,10 @@ export class AccTypeServiceImpl implements AccTypeService{
         const accType = await this.repository.getByTypeName(accTypeName)
         if (!accType) throw new NotFoundException('Account Type')
         return accType
+    }
+
+    async getAccTypes() : Promise <AccountTypeDTO[]> {
+        return await this.getAccTypes()
     }
     
 }

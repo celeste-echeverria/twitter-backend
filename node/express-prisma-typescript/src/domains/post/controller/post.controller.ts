@@ -12,13 +12,13 @@ import { UserServiceImpl } from '@domains/user/service'
 export const postRouter = Router()
 
 // Use dependency injection
-const service: PostService = new PostServiceImpl(new PostRepositoryImpl(db), new UserServiceImpl())
+const postService: PostService = new PostServiceImpl(new PostRepositoryImpl(db), new UserServiceImpl())
 
 postRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { limit, before, after } = req.query as Record<string, string>
 
-  const posts = await service.getLatestPosts(userId, { limit: Number(limit), before, after })
+  const posts = await postService.getLatestPosts(userId, { limit: Number(limit), before, after })
 
   return res.status(HttpStatus.OK).json(posts)
 })
@@ -27,10 +27,7 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
 
-  const post = await service.getPost(userId, postId)
-
-  const visible = await service.canAccessUsersPosts(userId, post.authorId)
-  if (!visible) throw new NotFoundException('Post')
+  const post = await postService.getPost(userId, postId)
 
   return res.status(HttpStatus.OK).json(post)
 })
@@ -39,11 +36,7 @@ postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { userId: authorId } = req.params
 
-  const visible = await service.canAccessUsersPosts(userId, authorId)
-  if (!visible) throw new NotFoundException('Posts')
-
-  const posts = await service.getPostsByAuthor(userId, authorId)
-  
+  const posts = await postService.getPostsByAuthor(userId, authorId)
 
   return res.status(HttpStatus.OK).json(posts)
 })
@@ -52,7 +45,7 @@ postRouter.post('/', BodyValidation(CreatePostInputDTO), async (req: Request, re
   const { userId } = res.locals.context
   const data = req.body
 
-  const post = await service.createPost(userId, data)
+  const post = await postService.createPost(userId, data)
 
   return res.status(HttpStatus.CREATED).json(post)
 })
@@ -61,7 +54,7 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
 
-  await service.deletePost(userId, postId)
+  await postService.deletePost(userId, postId)
 
   return res.status(HttpStatus.OK).send(`Deleted post ${postId}`)
 })
