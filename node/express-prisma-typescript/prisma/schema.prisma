@@ -73,7 +73,11 @@ model Post {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+  repliesToPostId String?  @db.Uuid
+  repliesToPost  Post?     @relation(name: "RepliesTo", fields: [repliesToPostId], references: [id])
+  replies   Post[]    @relation(name: "RepliesTo")
+
+  author    User  @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
 
   reactions Reaction[]
 }
