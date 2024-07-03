@@ -11,22 +11,31 @@ export const reactionRouter = Router()
 const reactionService : ReactionService = new ReactionServiceImpl()
 
 reactionRouter.post('/:post_id', async (req: Request, res: Response) => {
-    const { userId } = res.locals.context 
-    const { postId } = req.params
-    const { reactionType } = req.body
-    
-    const reaction = await reactionService.createReaction(reactionType, userId, postId)
-    return res.status(HttpStatus.OK).json(reaction)
+  const { userId } = res.locals.context 
+  const { postId } = req.params
+  const { reactionType } = req.body
+  
+  const reaction = await reactionService.createReaction(reactionType, userId, postId)
+  return res.status(HttpStatus.OK).json(reaction)
 
 })
 
 reactionRouter.delete('/:post_id', async (req: Request, res: Response) => {
-    const { userId } = res.locals.context
-    const { postId } = req.params
-    const { reactionType } = req.body
+  const { userId } = res.locals.context
+  const { postId } = req.params
+  const { reactionType } = req.body
 
-    await reactionService.deleteReaction(reactionType, userId, postId)
-    return res.status(HttpStatus.NO_CONTENT)
+  await reactionService.deleteReaction(reactionType, userId, postId)
+  return res.status(HttpStatus.NO_CONTENT)
+})
+
+reactionRouter.get('/:user_id', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context 
+  const { authorId } = req.params
+  const { reactionType } = req.body
+  //TO DO: Get reactions from user 
+  return res.status(HttpStatus.OK).json()
+
 })
 
 /*

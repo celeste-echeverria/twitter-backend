@@ -1,4 +1,4 @@
-import { CreatePostInputDTO, PostDTO } from '../dto'
+import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 import { PostRepository, PostRepositoryImpl } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
@@ -74,4 +74,10 @@ export class PostServiceImpl implements PostService {
     }
     return await this.followService.userIsFollowing(userId, authorId)
   }
+
+  async getCommentsFromPost (userId: string, postId: string): Promise <PostDTO[]> {
+    const post = await this.getPost(userId, postId)
+    return post.replies ?? []
+  }
+
 }

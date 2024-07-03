@@ -27,9 +27,12 @@ export class ReactionRepositoryImpl implements ReactionRepository {
     async getUserReactionFromPost(userId: string, postId: string, reactionTypeId: string): Promise <ReactionDTO | null> {
         const reaction = await this.db.reaction.findUnique({
             where: {
-                id: userId,
-                postId,
-                reactionTypeId
+                userId_postId_reactionTypeId: {
+                    userId,
+                    postId,
+                    reactionTypeId
+                }
+                
             }
         })
         return (reaction != null) ? new ReactionDTO(reaction) : null

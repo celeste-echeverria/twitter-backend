@@ -23,8 +23,16 @@ postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (r
   const comment = await postService.createComment(userId, postId, data)
 
   return res.status(HttpStatus.OK).json(comment)
-
 })
+
+//Get comments in a post
+postRouter.get('/comments/:postId'), async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  const { postId } = req.params
+
+  const comments = await postService.getCommentsFromPost(userId, postId)
+  return res.status(HttpStatus.OK).json(comments)
+}
 
 postRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context

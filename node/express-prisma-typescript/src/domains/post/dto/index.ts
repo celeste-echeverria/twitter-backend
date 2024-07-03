@@ -20,6 +20,7 @@ export class PostDTO {
     this.images = post.images
     this.createdAt = post.createdAt
     this.repliesToPostId = post.repliesToPostId 
+    this.replies = post.replies ? post.replies.map(reply => new PostDTO(reply)) : [];
   }
 
   id: string
@@ -28,6 +29,7 @@ export class PostDTO {
   images: string[]
   createdAt: Date
   repliesToPostId: string | null
+  replies?: PostDTO[]
 }
 
 export class ExtendedPostDTO extends PostDTO {
