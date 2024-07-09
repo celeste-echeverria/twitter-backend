@@ -14,7 +14,7 @@ export const postRouter = Router()
 // Use dependency injection
 const postService: PostService = new PostServiceImpl(new PostRepositoryImpl(db), new UserServiceImpl())
 
-//Comment in posts
+//Comment in post
 postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params

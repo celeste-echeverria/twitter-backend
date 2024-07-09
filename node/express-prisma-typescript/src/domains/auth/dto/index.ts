@@ -12,6 +12,10 @@ export class SignupInputDTO {
 
   @IsString()
   @IsNotEmpty()
+    name: string
+
+  @IsString()
+  @IsNotEmpty()
     username: string
 
   @IsString()
@@ -20,13 +24,15 @@ export class SignupInputDTO {
     password: string
 
   @IsOptional()
-    accTypeId: string
+    accTypeName: string
+
     
-  constructor (email: string, username: string, password: string, accTypeId: string) {
+  constructor (email: string, username: string, password: string, accTypeName: string, name: string) {
     this.email = email
+    this.name = name
     this.password = password
     this.username = username
-    this.accTypeId = accTypeId
+    this.accTypeName = accTypeName
   }
 }
 

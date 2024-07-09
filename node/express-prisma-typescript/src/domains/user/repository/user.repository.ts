@@ -1,6 +1,7 @@
 import { SignupInputDTO } from '@domains/auth/dto'
 import { OffsetPagination } from '@types'
 import { ExtendedUserDTO, UserDTO } from '../dto'
+import { AccountTypeDTO } from '@domains/accountType/dto'
 
 export interface UserRepository {
   create: (data: SignupInputDTO) => Promise<UserDTO>

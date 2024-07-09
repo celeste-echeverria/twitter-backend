@@ -16,10 +16,17 @@ export class UserServiceImpl implements UserService {
   ) {}
 
   async createUser (data: SignupInputDTO): Promise<UserDTO> {
+    //get Public account type
     const accType = await this.accTypeService.getAccTypeByTypeName('Public')
     if(!accType) throw new NotFoundException('Account Type')
 
-    const user = await this.userRepository.create({ ...data, accTypeId: accType.id})
+    const userData = {
+      ...data,
+      accTypeId: accType.id,
+    };
+
+    const user = await this.userRepository.create(userData)
+
     return user
   }
 
@@ -33,7 +40,11 @@ export class UserServiceImpl implements UserService {
   async getUser (userId: any): Promise<UserDTO> {
     const user = await this.userRepository.getById(userId)
     if (!user) throw new NotFoundException('User')
-    return user
+    
+    const accType = await this.accTypeService.getAccTypeByTypeName('Public')
+    if(!accType) throw new NotFoundException('Account Type')
+
+    return ({...user, accTypeName: accType.typeName})
   }
 
   async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserDTO[]> {
@@ -52,7 +63,7 @@ export class UserServiceImpl implements UserService {
     const accType = await this.accTypeService.getAccTypeByTypeName('Public')
     if (!accType) throw new NotFoundException('Account Type')
 
-    return user.accTypeId == accType.id
+    return user.accTypeName == accType.typeName
   }
 
   async setUserAccountType (userId: any, accTypeId: any) : Promise<UserDTO> {

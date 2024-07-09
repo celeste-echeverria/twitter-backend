@@ -3,13 +3,13 @@ export class UserDTO {
     this.id = user.id
     this.name = user.name
     this.createdAt = user.createdAt
-    this.accTypeId = user.accTypeId
+    this.accTypeName = user.accTypeName
   }
 
   id: string
   name: string | null
   createdAt: Date
-  accTypeId: string
+  accTypeName?: string
 }
 
 export class ExtendedUserDTO extends UserDTO {

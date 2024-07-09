@@ -24,8 +24,10 @@ userRouter.get('/', async (req: Request, res: Response) => {
 
 userRouter.get('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
+  console.log('id:', userId)
 
   const user = await service.getUser(userId)
+  console.log('user:', user)
 
   return res.status(HttpStatus.OK).json(user)
 })
@@ -38,7 +40,7 @@ userRouter.get('/:userId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(user)
 })
 
-userRouter.delete('/', async (req: Request, res: Response) => {
+userRouter.delete('/del', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
   await service.deleteUser(userId)

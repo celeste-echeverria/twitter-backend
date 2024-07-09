@@ -7,16 +7,21 @@ import { UserRepository } from './user.repository'
 export class UserRepositoryImpl implements UserRepository {
   constructor (private readonly db: PrismaClient) {}
 
-  async create (data: SignupInputDTO): Promise<UserDTO> {
-    return await this.db.user.create({
-      data
-    }).then(user => new UserDTO(user))
+  async create (data: any): Promise<UserDTO> {
+    const user = await this.db.user.create({
+      data,
+    })
+
+    return new UserDTO(user)
   }
 
   async getById (userId: any): Promise<UserDTO | null> {
     const user = await this.db.user.findUnique({
       where: {
         id: userId
+      },
+      include: {
+        accType: true
       }
     })
     return user ? new UserDTO(user) : null
@@ -38,7 +43,7 @@ export class UserRepositoryImpl implements UserRepository {
         {
           id: 'asc'
         }
-      ]
+      ],
     })
     return users.map(user => new UserDTO(user))
   }
@@ -54,6 +59,9 @@ export class UserRepositoryImpl implements UserRepository {
             username
           }
         ]
+      },
+      include: {
+        accType: true
       }
     })
     return user ? new ExtendedUserDTO(user) : null
