@@ -4,19 +4,22 @@ import { CursorPagination } from '@types'
 
 import { PostRepository } from '.'
 import { CreatePostInputDTO, PostDTO } from '../dto'
+import { UserDTO } from '@domains/user/dto'
+import { connect } from 'http2'
 
 export class PostRepositoryImpl implements PostRepository {
   constructor (private readonly db: PrismaClient) {}
 
-  async create (userId: string, data: CreatePostInputDTO, repliesToPostId?: string): Promise<PostDTO> {
+  async create (authorId: string, data: CreatePostInputDTO, mainPostId?: string): Promise<PostDTO> {
     const post = await this.db.post.create({
       data: {
-        authorId: userId,
-        repliesToPostId,
-        ...data
+        content: data.content,
+        images: data.images,
+        authorId,
+        repliesToPostId: mainPostId
       }
-    })
-    return new PostDTO(post)
+    });
+    return new PostDTO(post);
   }
 
   async getAllByDatePaginated (authorsIds: string[], options: CursorPagination): Promise<PostDTO[]> {
@@ -51,6 +54,9 @@ export class PostRepositoryImpl implements PostRepository {
     const post = await this.db.post.findUnique({
       where: {
         id: postId
+      },
+      include: {
+        replies: true
       }
     })
     return post ? new PostDTO(post) : null

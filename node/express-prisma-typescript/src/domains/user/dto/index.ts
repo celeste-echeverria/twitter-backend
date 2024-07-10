@@ -4,11 +4,13 @@ export class UserDTO {
     this.name = user.name
     this.createdAt = user.createdAt
     this.accTypeName = user.accTypeName
+    this.accTypeId = user.accTypeId
   }
 
   id: string
   name: string | null
   createdAt: Date
+  accTypeId: string
   accTypeName?: string
 }
 

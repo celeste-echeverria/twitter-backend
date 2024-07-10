@@ -1,8 +1,8 @@
 import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 
 export interface PostService {
-  createPost: (userId: string, body: CreatePostInputDTO) => Promise<PostDTO>
-  createComment: (userId: string, postId: string, body: CreatePostInputDTO) => Promise<PostDTO>
+  createPost: (userId: string, content: CreatePostInputDTO) => Promise<PostDTO>
+  createComment: (user: string, postId: string, content: CreatePostInputDTO) => Promise<PostDTO>
   
   deletePost: (userId: string, postId: string) => Promise<void>
   

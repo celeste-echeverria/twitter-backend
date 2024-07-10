@@ -22,7 +22,6 @@ authRouter.post('/signup', BodyValidation(SignupInputDTO), async (req: Request, 
 
 authRouter.post('/login', BodyValidation(LoginInputDTO), async (req: Request, res: Response) => {
   const data = req.body
-  console.log(data)
 
   const token = await service.login(data)
 

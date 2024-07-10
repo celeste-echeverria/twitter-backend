@@ -18,32 +18,32 @@ const postService: PostService = new PostServiceImpl(new PostRepositoryImpl(db),
 postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
-  const { data } = req.body
+  const content = req.body
 
-  const comment = await postService.createComment(userId, postId, data)
+  const comment = await postService.createComment(userId, postId, content)
 
   return res.status(HttpStatus.OK).json(comment)
 })
 
 //Get comments in a post
-postRouter.get('/comments/:postId'), async (req: Request, res: Response) => {
+postRouter.get('/comments/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
 
   const comments = await postService.getCommentsFromPost(userId, postId)
   return res.status(HttpStatus.OK).json(comments)
-}
+})
 
 postRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { limit, before, after } = req.query as Record<string, string>
-
   const posts = await postService.getLatestPosts(userId, { limit: Number(limit), before, after })
 
   return res.status(HttpStatus.OK).json(posts)
 })
 
 postRouter.get('/:postId', async (req: Request, res: Response) => {
+
   const { userId } = res.locals.context
   const { postId } = req.params
 
@@ -53,6 +53,7 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
 })
 
 postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
+
   const { userId } = res.locals.context
   const { userId: authorId } = req.params
 

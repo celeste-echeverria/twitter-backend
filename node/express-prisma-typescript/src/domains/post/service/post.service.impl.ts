@@ -2,7 +2,7 @@ import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 import { PostRepository, PostRepositoryImpl } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
-import { ForbiddenException, NotFoundException } from '@utils'
+import { BadRequestException, ForbiddenException, NotFoundException } from '@utils'
 import { db } from '@utils/database'
 import { CursorPagination } from '@types'
 import { UserService, UserServiceImpl } from '@domains/user/service'
@@ -15,17 +15,18 @@ export class PostServiceImpl implements PostService {
     private readonly followService: FollowService = new FollowServiceImpl(),
   ) {}
 
-  async createPost (userId: string, data: CreatePostInputDTO): Promise<PostDTO> {
-    await validate(data)
-    return await this.postRepository.create(userId, data)
+  async createPost (userId: string, content: CreatePostInputDTO): Promise<PostDTO> {
+    await validate(content)
+    return await this.postRepository.create(userId, content)
   }
 
-  async createComment (userId: string, postId: string, data: CreatePostInputDTO): Promise<PostDTO> {
+  async createComment (userId: string, postId: string, content: CreatePostInputDTO): Promise<PostDTO> {
     const post = this.getPost(userId, postId)
     if(!post) throw new NotFoundException('post')
+    const author = this.userService.getUser(userId)
+    if(!author) throw new NotFoundException('user')
 
-    await validate(data)
-    return await this.postRepository.create(userId, data, postId)
+    return await this.postRepository.create(userId, content, postId)
   }
 
   async deletePost (userId: string, postId: string): Promise<void> {
@@ -53,13 +54,13 @@ export class PostServiceImpl implements PostService {
     //Combines public and followed authors
     const visibleAuthorIdsSet = new Set([...followedAuthorIds, ...publicAuthorIds]);
     const visibleAuthorIds = Array.from(visibleAuthorIdsSet)
+
     return await this.postRepository.getAllByDatePaginated(visibleAuthorIds, options)
   }
 
   async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
     const canAccess = await this.canAccessUsersPosts(userId, authorId)
     if (!canAccess) throw new NotFoundException('Posts')
-    
     return await this.postRepository.getByAuthorId(authorId)
   }
 
@@ -67,17 +68,28 @@ export class PostServiceImpl implements PostService {
     if (userId == authorId) {
       return true
     }
-  
+    
     const publicAccount = (await this.userService.isPublic(authorId))
     if (publicAccount) {
       return true
     }
+
     return await this.followService.userIsFollowing(userId, authorId)
   }
 
   async getCommentsFromPost (userId: string, postId: string): Promise <PostDTO[]> {
-    const post = await this.getPost(userId, postId)
-    return post.replies ?? []
+    try {
+      const post = await this.getPost(userId, postId)
+      console.log('got post')
+      if (!post.replies) {
+        console.log('no replies')
+        throw new NotFoundException('replies')
+      }
+      console.log(post.replies)
+      return post.replies
+    } catch (error) {
+      throw error
+    }
   }
 
 }

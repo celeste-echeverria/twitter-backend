@@ -62,12 +62,13 @@ export class UserServiceImpl implements UserService {
     
     const accType = await this.accTypeService.getAccTypeByTypeName('Public')
     if (!accType) throw new NotFoundException('Account Type')
-
-    return user.accTypeName == accType.typeName
+    
+    return user.accTypeId == accType.id
   }
 
   async setUserAccountType (userId: any, accTypeId: any) : Promise<UserDTO> {
-    return await this.userRepository.setAccountType(userId, accTypeId)
+    const accType = await this.accTypeService.getAccTypeById(accTypeId)
+    return await this.userRepository.setAccountType(userId, accTypeId, accType.typeName)
   }
 
   async getPublicUsersIds (): Promise <string[]> {
