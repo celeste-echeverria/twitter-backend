@@ -34,6 +34,7 @@ postRouter.get('/comments/:postId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(comments)
 })
 
+//Get Latest Posts
 postRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { limit, before, after } = req.query as Record<string, string>
@@ -42,6 +43,7 @@ postRouter.get('/', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(posts)
 })
 
+//Get post by postId
 postRouter.get('/:postId', async (req: Request, res: Response) => {
 
   const { userId } = res.locals.context
@@ -52,6 +54,7 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(post)
 })
 
+//Get posts by userId
 postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
 
   const { userId } = res.locals.context
@@ -62,6 +65,7 @@ postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(posts)
 })
 
+//Create a new post
 postRouter.post('/', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const data = req.body
@@ -71,6 +75,7 @@ postRouter.post('/', BodyValidation(CreatePostInputDTO), async (req: Request, re
   return res.status(HttpStatus.CREATED).json(post)
 })
 
+//Delete a post by post Id
 postRouter.delete('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params

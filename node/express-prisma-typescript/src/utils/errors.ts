@@ -48,6 +48,13 @@ export class ConflictException extends HttpException {
   }
 }
 
+export class InternalServerErrorException extends HttpException {
+  constructor (location: string, error?: object[] | object) {
+    const message = `Something went wrong at ${location}`
+    super(HttpStatus.INTERNAL_SERVER_ERROR, message, error)
+  }
+}
+
 export function ErrorHandling (error: Error, req: Request, res: Response, next: NextFunction): Response {
   if (!error) next(error) // TODO How should I fix EsLint here?
   if (error instanceof HttpException) {

@@ -23,7 +23,6 @@ export class FollowServiceImpl implements FollowService {
     }
 
     async userIsFollowing(followerId: string, followedId: string): Promise<boolean> {
-        console.log('follower', followerId,  'follows', followedId)
         return await this.repository.isFollowing(followerId, followedId)
     }
 

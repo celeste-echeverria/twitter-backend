@@ -31,13 +31,13 @@ export class ReactionTypeRepositoryImpl implements ReactionTypeRepository {
         return (reactionType != null) ? new ReactionTypeDTO(reactionType) : null
     }
 
-    async getByTypeName (reactionTypeName: string): Promise <ReactionTypeDTO | null> {
+    async getByTypeName (reactionTypeName: string): Promise<ReactionTypeDTO | null> {
         const reactionType = await this.db.reactionType.findUnique({
-            where:{
+            where: {
                 typeName: reactionTypeName
             }
-        })
-        return (reactionType != null) ? new ReactionTypeDTO(reactionType) : null
+        });
+        return (reactionType != null) ? new ReactionTypeDTO(reactionType) : null;
     }
 
     async getReactionTypes (): Promise <ReactionTypeDTO[]> {

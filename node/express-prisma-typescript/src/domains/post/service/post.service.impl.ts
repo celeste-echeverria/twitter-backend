@@ -79,14 +79,13 @@ export class PostServiceImpl implements PostService {
 
   async getCommentsFromPost (userId: string, postId: string): Promise <PostDTO[]> {
     try {
+
       const post = await this.getPost(userId, postId)
-      console.log('got post')
       if (!post.replies) {
-        console.log('no replies')
         throw new NotFoundException('replies')
       }
-      console.log(post.replies)
       return post.replies
+      
     } catch (error) {
       throw error
     }
