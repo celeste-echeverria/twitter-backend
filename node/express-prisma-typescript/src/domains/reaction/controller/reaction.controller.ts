@@ -31,35 +31,9 @@ reactionRouter.get('/:user_id', async (req: Request, res: Response) => {
   const { userId } = res.locals.context 
   const { authorId } = req.params
   const { reactionType } = req.body
-  
+
   //TO DO: Get reactions from user 
   return res.status(HttpStatus.OK).json()
 
 })
 
-/*
-postRouter.get('/:postId', async (req: Request, res: Response) => {
-  const { userId } = res.locals.context
-  const { postId } = req.params
-
-  const post = await postService.getPost(userId, postId)
-
-  const visible = await postService.canAccessUsersPosts(userId, post.authorId)
-  if (!visible) throw new NotFoundException('Post')
-
-  return res.status(HttpStatus.OK).json(post)
-})
-
-
-
-const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db))
-
-postRouter.get('/', async (req: Request, res: Response) => {
-  const { userId } = res.locals.context
-  const { limit, before, after } = req.query as Record<string, string>
-
-  const posts = await postService.getLatestPosts(userId, { limit: Number(limit), before, after })
-
-  return res.status(HttpStatus.OK).json(posts)
-})
-  */

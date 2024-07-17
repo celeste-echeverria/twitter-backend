@@ -12,4 +12,7 @@ export interface UserService {
   isPublic: (userId: any) => Promise<boolean>
   setUserAccountType: (userId: any, accTypeId: any) => Promise<UserDTO>
   getPublicUsersIds: () => Promise<string[]>
+  getProfileUploadUrl: (userId: string) => Promise<string> 
+  getProfileDownloadUrl: (userId: string) => Promise<string> 
+
 }

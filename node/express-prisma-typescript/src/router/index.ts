@@ -16,3 +16,5 @@ router.use('/user', withAuth, userRouter)
 router.use('/post', withAuth, postRouter)
 router.use('/follower', withAuth, followRouter)
 router.use('/reaction', withAuth, reactionRouter)
+
+export default router

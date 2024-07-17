@@ -1,3 +1,4 @@
+import { UserDTO } from "@domains/user/dto";
 import { FollowDTO } from "../dto";
 
 export interface FollowService {
@@ -5,4 +6,6 @@ export interface FollowService {
     unfollow: (followerId: string, followedId: string) => Promise<void>
     userIsFollowing: (followerId: string, followedId: string) => Promise<boolean>
     getFollowedUsersId: (followerId: string) => Promise <string[]>
+    getFollowersByUserId: (userId: string) => Promise <UserDTO[]>
+    getFollowingByUserId: (userId: string) => Promise <UserDTO[]>
 }

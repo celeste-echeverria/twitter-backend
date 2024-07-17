@@ -2,11 +2,12 @@ import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 import { PostRepository, PostRepositoryImpl } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
-import { BadRequestException, ForbiddenException, NotFoundException } from '@utils'
+import { BadRequestException, ForbiddenException, InternalServerErrorException, NotFoundException } from '@utils'
 import { db } from '@utils/database'
 import { CursorPagination } from '@types'
 import { UserService, UserServiceImpl } from '@domains/user/service'
 import { FollowService, FollowServiceImpl } from '@domains/follow/service'
+import e from 'express'
 
 export class PostServiceImpl implements PostService {
   constructor (
@@ -16,78 +17,115 @@ export class PostServiceImpl implements PostService {
   ) {}
 
   async createPost (userId: string, content: CreatePostInputDTO): Promise<PostDTO> {
-    await validate(content)
-    return await this.postRepository.create(userId, content)
+    try {
+      await validate(content)
+      return await this.postRepository.create(userId, content)
+    } catch (error) {
+      throw new InternalServerErrorException("createPost")
+    }
   }
 
   async createComment (userId: string, postId: string, content: CreatePostInputDTO): Promise<PostDTO> {
-    const post = this.getPost(userId, postId)
-    if(!post) throw new NotFoundException('post')
-    const author = this.userService.getUser(userId)
-    if(!author) throw new NotFoundException('user')
+    try {
 
-    return await this.postRepository.create(userId, content, postId)
+      const post = this.getPost(userId, postId)
+      if(!post) throw new NotFoundException('Post')
+      const author = this.userService.getUser(userId)
+      if(!author) throw new NotFoundException('User')
+
+      return await this.postRepository.create(userId, content, postId)
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error
+      throw new InternalServerErrorException("createComment")
+    }
   }
 
   async deletePost (userId: string, postId: string): Promise<void> {
-    const post = await this.postRepository.getById(postId)
-    if (!post) throw new NotFoundException('post')
-    if (post.authorId !== userId) throw new ForbiddenException()
-    await this.postRepository.delete(postId)
+    try {
+      const post = await this.postRepository.getById(postId)
+      if (!post) throw new NotFoundException('Post')
+      if (post.authorId !== userId) throw new ForbiddenException()
+      await this.postRepository.delete(postId)
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error
+      if (error instanceof ForbiddenException) throw error
+      throw new InternalServerErrorException("deletePost")
+    }
+    
   }
 
   async getPost (userId: string, postId: string): Promise<PostDTO> {
-    const post = await this.postRepository.getById(postId)
-    if (!post) throw new NotFoundException('post')
+    try {
+      const post = await this.postRepository.getById(postId)
+      if (!post) throw new NotFoundException('Post')
 
-    const canAccess = await this.canAccessUsersPosts(userId, post.authorId)
-    if (!canAccess) throw new NotFoundException('Post')
-    return post
+      const canAccess = await this.canAccessUsersPosts(userId, post.authorId)
+      if (!canAccess) throw new NotFoundException('Post')
+
+      return post
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error
+      throw new InternalServerErrorException("getPost")
+    }
+    
   }
 
   async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
-    //Gets id of all authors followed by user
-    const followedAuthorIds = await this.followService.getFollowedUsersId(userId)
-    //Gets id of all public users
-    const publicAuthorIds = await this.userService.getPublicUsersIds()
+    try {
+      //Gets id of all authors followed by user
+      const followedAuthorIds = await this.followService.getFollowedUsersId(userId)
+      //Gets id of all public users
+      const publicAuthorIds = await this.userService.getPublicUsersIds()
 
-    //Combines public and followed authors
-    const visibleAuthorIdsSet = new Set([...followedAuthorIds, ...publicAuthorIds]);
-    const visibleAuthorIds = Array.from(visibleAuthorIdsSet)
+      //Combines public and followed authors
+      const visibleAuthorIdsSet = new Set([...followedAuthorIds, ...publicAuthorIds]);
+      const visibleAuthorIds = Array.from(visibleAuthorIdsSet)
 
-    return await this.postRepository.getAllByDatePaginated(visibleAuthorIds, options)
+      return await this.postRepository.getAllByDatePaginated(visibleAuthorIds, options)
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error
+      throw new InternalServerErrorException("getLatestPosts")
+    }
+    
   }
 
   async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
-    const canAccess = await this.canAccessUsersPosts(userId, authorId)
-    if (!canAccess) throw new NotFoundException('Posts')
-    return await this.postRepository.getByAuthorId(authorId)
+    try {
+      const canAccess = await this.canAccessUsersPosts(userId, authorId)
+      if (!canAccess) throw new NotFoundException('Posts')
+      return await this.postRepository.getByAuthorId(authorId)
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error
+      throw new InternalServerErrorException("getPostsByAuthor")
+    }
+   
   }
 
   async canAccessUsersPosts (userId: string, authorId: string): Promise <boolean>{
-    if (userId == authorId) {
-      return true
+    try {
+      if (userId == authorId) {
+        return true
+      }
+      
+      const publicAccount = (await this.userService.isPublic(authorId))
+      if (publicAccount) {
+        return true
+      }
+  
+      return await this.followService.userIsFollowing(userId, authorId)
+    } catch (error) {
+      throw new InternalServerErrorException("canAccessUsersPosts")
     }
     
-    const publicAccount = (await this.userService.isPublic(authorId))
-    if (publicAccount) {
-      return true
-    }
-
-    return await this.followService.userIsFollowing(userId, authorId)
   }
 
-  async getCommentsFromPost (userId: string, postId: string): Promise <PostDTO[]> {
+  async getCommentsFromPost (userId: string, postId: string): Promise <PostDTO[] | []> {
     try {
-
       const post = await this.getPost(userId, postId)
-      if (!post.replies) {
-        throw new NotFoundException('replies')
-      }
-      return post.replies
-      
+      return post.replies ?? []
     } catch (error) {
-      throw error
+      if (error instanceof NotFoundException) throw error
+      throw new InternalServerErrorException("getCommentsFromPost")
     }
   }
 

@@ -6,7 +6,7 @@ import { AccountTypeDTO } from '@domains/accountType/dto'
 export interface UserRepository {
   create: (data: SignupInputDTO) => Promise<UserDTO>
   delete: (userId: any) => Promise<void>
-  getRecommendedUsersPaginated: (options: OffsetPagination) => Promise<UserDTO[]>
+  getRecommendedUsersPaginated: (recommendedUsersIds: string[], options: OffsetPagination) => Promise<UserDTO[]>
   getById: (userId: any) => Promise<UserDTO | null>
   getByEmailOrUsername: (email?: string, username?: string) => Promise<ExtendedUserDTO | null>
   setAccountType: (userId: any, accTypeId: any, accTypeName: string) => Promise<UserDTO>

@@ -6,6 +6,7 @@ import cors from 'cors'
 import { Constants, NodeEnv, Logger } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
+import { setupSwagger } from '@utils/swagger'
 
 const app = express()
 
@@ -29,6 +30,8 @@ app.use(
 app.use('/api', router)
 
 app.use(ErrorHandling)
+
+setupSwagger(app);
 
 app.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`)

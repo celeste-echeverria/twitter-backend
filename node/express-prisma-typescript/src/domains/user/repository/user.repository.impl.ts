@@ -21,7 +21,7 @@ export class UserRepositoryImpl implements UserRepository {
         id: userId
       },
       include: {
-        accType: true
+        accType: true,
       }
     })
     return user ? new UserDTO(user) : null
@@ -35,8 +35,9 @@ export class UserRepositoryImpl implements UserRepository {
     })
   }
 
-  async getRecommendedUsersPaginated (options: OffsetPagination): Promise<UserDTO[]> {
+  async getRecommendedUsersPaginated (recommendedUsersIds: string[], options: OffsetPagination): Promise<UserDTO[]> {
     const users = await this.db.user.findMany({
+      where: {id: {in: recommendedUsersIds}},
       take: options.limit ? options.limit : undefined,
       skip: options.skip ? options.skip : undefined,
       orderBy: [
