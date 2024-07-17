@@ -1,7 +1,6 @@
-import { SignupInputDTO } from '@domains/auth/dto'
 import { PrismaClient } from '@prisma/client'
 import { OffsetPagination } from '@types'
-import { ExtendedUserDTO, UserDTO } from '../dto'
+import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
 import { UserRepository } from './user.repository'
 
 export class UserRepositoryImpl implements UserRepository {
@@ -88,4 +87,35 @@ export class UserRepositoryImpl implements UserRepository {
     })
     return users.map(user => user.id);
   }
+
+  async updateProfilePicture(userId: string, fileName: string): Promise <UserDTO> {
+    const updatedUser = await this.db.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        profilePicture: fileName
+      }
+    })
+    return new UserDTO(updatedUser)
+  }
+
+  async getProfilePictureById (userId: string): Promise <string | null> {
+    const user = await this.db.user.findUnique({
+      where: {
+        id: userId
+      }
+    })
+    return user ? user.profilePicture : null
+  }
+  
+  async getViewById (userId: any): Promise<UserViewDTO | null> {
+    const user = await this.db.user.findUnique({
+      where: {
+        id: userId
+      }
+    })
+    return user ? new UserViewDTO(user) : null
+  }
+
 }

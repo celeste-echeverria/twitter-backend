@@ -5,6 +5,7 @@ export class UserDTO {
     this.createdAt = user.createdAt
     this.accTypeName = user.accTypeName
     this.accTypeId = user.accTypeId
+    this.profilePicture = user.profilePicture
   }
 
   id: string
@@ -12,6 +13,7 @@ export class UserDTO {
   createdAt: Date
   accTypeId: string
   accTypeName?: string
+  profilePicture?: string | null
 }
 
 export class ExtendedUserDTO extends UserDTO {
@@ -36,7 +38,7 @@ export class UserViewDTO {
   }
 
   id: string
-  name: string
+  name: string | null
   username: string
   profilePicture: string | null
 }

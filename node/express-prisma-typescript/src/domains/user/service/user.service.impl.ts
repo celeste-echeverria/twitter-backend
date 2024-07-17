@@ -1,6 +1,6 @@
 import { InternalServerErrorException, NotFoundException } from '@utils/errors'
 import { OffsetPagination } from 'types'
-import { ExtendedUserDTO, UserDTO } from '../dto'
+import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
 import { UserRepository, UserRepositoryImpl } from '../repository'
 
 import { UserService } from './user.service'
@@ -134,8 +134,11 @@ export class UserServiceImpl implements UserService {
 
   async getProfileUploadUrl(userId: string): Promise<string> {
     try {
-      const fileName = `profiles/${userId}.jpg`; //revisar nombre
-      return await getPresignedPutUrl(fileName);
+      const fileName = `profiles/${userId}.jpg`; 
+      const url =  await getPresignedPutUrl(fileName);
+      await this.userRepository.updateProfilePicture(userId, fileName)
+      console.log('saved profile picture as', fileName)
+      return url 
     } catch (error) {
       console.log(error)
       throw new InternalServerErrorException("getProfileUploadUrl")
@@ -144,11 +147,27 @@ export class UserServiceImpl implements UserService {
 
   async getProfileDownloadUrl(userId: string): Promise<string> {
     try {
-      const fileName = `profiles/${userId}.jpg`; //revisar nombre
+      const fileName = await this.userRepository.getProfilePictureById(userId) 
+      if (!fileName) throw new NotFoundException("Profile Picture")
       return await getPresignedGetURL(fileName);
     } catch (error) {
       console.log(error)
+      if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getProfileDownloadUrl")
     } 
+  }
+
+  async getUserView(userId: string): Promise <UserViewDTO> {
+    try {
+      const user = await this.userRepository.getViewById(userId)
+      if (!user) throw new NotFoundException("User")
+      if (!user.profilePicture) return new UserViewDTO(user)
+      
+      const profileUrl = await getPresignedGetURL(user.profilePicture)
+      return new UserViewDTO({...user, profilePicture: profileUrl})
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error
+      throw new InternalServerErrorException("getUserView")
+    }
   }
 }

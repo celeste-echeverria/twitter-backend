@@ -24,36 +24,35 @@ userRouter.get('/', async (req: Request, res: Response) => {
 userRouter.get('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
-  const user = await service.getUser(userId)
-  console.log(user.accTypeName)
+  const user = await service.getUserView(userId)
   return res.status(HttpStatus.OK).json(user)
 })
 
 userRouter.get('/profile-upload-url', async (req: Request, res: Response) => {
   try {
-    const { userId } = res.locals.context;
-    const url = await service.getProfileUploadUrl(userId);
-    res.status(200).json({ url });
+    const { userId } = res.locals.context
+    const url  = await service.getProfileUploadUrl(userId)
+    res.status(200).json({ url })
   } catch (error) {
-    console.error('Error al obtener URL pre-firmada:', error);
-    res.status(500).json({ message: 'Error al obtener URL pre-firmada' });
+    console.error('Error getting pre-signed URL:', error)
+    res.status(500).json({ message: 'Error getting pre-signed URL' })
   }
 });
 
 userRouter.get('/profile-download-url', async (req: Request, res: Response) => {
   try {
-    const { userId } = res.locals.context;
-    const url = await service.getProfileDownloadUrl(userId);
-    res.status(200).json({ url });
+    const { userId } = res.locals.context
+    const url = await service.getProfileDownloadUrl(userId)
+    res.status(200).json({ url })
   } catch (error) {
-    console.error('Error al obtener URL pre-firmada:', error);
-    res.status(500).json({ message: 'Error al obtener URL pre-firmada' });
+    console.error('Error getting pre-signed URL', error)
+    res.status(500).json({ message: 'Error getting pre-signed URL' })
   }
-});
+})
 
 userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId: otherUserId } = req.params
-  const user = await service.getUser(otherUserId)
+  const user = await service.getUserView(otherUserId)
 
   return res.status(HttpStatus.OK).json(user)
 })

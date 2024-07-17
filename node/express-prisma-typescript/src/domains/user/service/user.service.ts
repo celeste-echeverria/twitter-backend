@@ -1,5 +1,5 @@
 import { OffsetPagination } from '@types'
-import { ExtendedUserDTO, UserDTO } from '../dto'
+import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
 import { SignupInputDTO } from '@domains/auth/dto'
 import { User } from '@prisma/client'
 
@@ -14,5 +14,6 @@ export interface UserService {
   getPublicUsersIds: () => Promise<string[]>
   getProfileUploadUrl: (userId: string) => Promise<string> 
   getProfileDownloadUrl: (userId: string) => Promise<string> 
+  getUserView: (userId: string) => Promise <UserViewDTO> 
 
 }
