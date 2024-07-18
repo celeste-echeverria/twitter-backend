@@ -2,12 +2,14 @@ import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 import { PostRepository, PostRepositoryImpl } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
-import { BadRequestException, ForbiddenException, InternalServerErrorException, NotFoundException } from '@utils'
+import {ForbiddenException, InternalServerErrorException, NotFoundException } from '@utils'
 import { db } from '@utils/database'
 import { CursorPagination } from '@types'
 import { UserService, UserServiceImpl } from '@domains/user/service'
 import { FollowService, FollowServiceImpl } from '@domains/follow/service'
-import e from 'express'
+import { getPresignedGetURL, getPresignedPutUrl } from '@utils/aws.s3'
+import { v4 as uuidv4 } from 'uuid'
+
 
 export class PostServiceImpl implements PostService {
   constructor (
@@ -27,7 +29,7 @@ export class PostServiceImpl implements PostService {
 
   async createComment (userId: string, postId: string, content: CreatePostInputDTO): Promise<PostDTO> {
     try {
-
+      await validate(content)
       const post = this.getPost(userId, postId)
       if(!post) throw new NotFoundException('Post')
       const author = this.userService.getUser(userId)
@@ -62,8 +64,17 @@ export class PostServiceImpl implements PostService {
       const canAccess = await this.canAccessUsersPosts(userId, post.authorId)
       if (!canAccess) throw new NotFoundException('Post')
 
-      return post
+      let urls
+      if (post.images && post.images.length > 0) {
+        const urlPromises = post.images.map(async (image) => {
+          return await getPresignedGetURL(image);
+        });
+        urls = await Promise.all(urlPromises);
+      }
+
+      return ({...post, images: urls})
     } catch (error) {
+      console.log(error)
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getPost")
     }
@@ -93,7 +104,22 @@ export class PostServiceImpl implements PostService {
     try {
       const canAccess = await this.canAccessUsersPosts(userId, authorId)
       if (!canAccess) throw new NotFoundException('Posts')
-      return await this.postRepository.getByAuthorId(authorId)
+
+      const posts =  await this.postRepository.getByAuthorId(authorId)
+      
+      const processedPosts = await Promise.all(posts.map(async (post) => {
+        if (post.images && post.images.length > 0) {
+          const urlPromises = post.images.map(async (image) => {
+            return await getPresignedGetURL(image);
+          });
+          const urls = await Promise.all(urlPromises);
+          return { ...post, images: urls };
+        } else {
+          return post;
+        }
+      }))
+
+      return processedPosts
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getPostsByAuthor")
@@ -129,4 +155,14 @@ export class PostServiceImpl implements PostService {
     }
   }
 
+  async getUploadImageUrl(userId: string): Promise <{fileName: string, url: string}>{
+    try {
+      const imageName = uuidv4()
+      const fileName = `posts/${userId}/${imageName}.jpg`
+      const url = await getPresignedPutUrl(fileName)
+      return {fileName, url}
+    } catch (error) {
+      throw new InternalServerErrorException('getUploadImagesUrls')
+    }
+  }
 }

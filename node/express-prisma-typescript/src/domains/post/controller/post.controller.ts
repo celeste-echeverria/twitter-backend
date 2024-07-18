@@ -14,6 +14,13 @@ export const postRouter = Router()
 // Use dependency injection
 const postService: PostService = new PostServiceImpl(new PostRepositoryImpl(db), new UserServiceImpl())
 
+//Get upload images url
+postRouter.get('/upload-images-url', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  const {fileName, url} = await postService.getUploadImageUrl(userId)
+  return res.status(HttpStatus.OK).json({fileName, url})
+})
+
 //Comment in post
 postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
   const { userId } = res.locals.context
@@ -69,11 +76,12 @@ postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
 postRouter.post('/', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const data = req.body
-
+  
   const post = await postService.createPost(userId, data)
 
   return res.status(HttpStatus.CREATED).json(post)
 })
+
 
 //Delete a post by post Id
 postRouter.delete('/:postId', async (req: Request, res: Response) => {

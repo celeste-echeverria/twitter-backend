@@ -13,4 +13,5 @@ export interface PostService {
 
   canAccessUsersPosts: (userId: string, authorId: string) => Promise <boolean>
 
+  getUploadImageUrl: (userId: string) => Promise <{fileName: string, url: string}>
 }

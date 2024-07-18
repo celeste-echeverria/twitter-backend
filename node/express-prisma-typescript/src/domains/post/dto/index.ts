@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
+import { ArrayMaxSize, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
 import { ExtendedUserDTO } from '@domains/user/dto'
 
 export class CreatePostInputDTO {
@@ -8,7 +8,7 @@ export class CreatePostInputDTO {
     content!: string
 
   @IsOptional()
-  @MaxLength(4)
+  @ArrayMaxSize(4)
     images?: string[]
 }
 
@@ -26,7 +26,7 @@ export class PostDTO {
   id: string
   authorId: string
   content: string
-  images: string[]
+  images?: string[]
   createdAt: Date
   repliesToPostId: string | null
   replies?: PostDTO[]
