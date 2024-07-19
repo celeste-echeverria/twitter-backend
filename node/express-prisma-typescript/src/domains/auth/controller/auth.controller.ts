@@ -38,36 +38,47 @@ authRouter.post('/login', BodyValidation(LoginInputDTO), async (req: Request, re
  *           type: string
  *           format: email
  *           description: User's email
+ *         name:
+ *           type: string
+ *           description: User's full name
  *         username:
  *           type: string
  *           description: User's username
  *         password:
  *           type: string
- *           format: password
  *           description: User's password
+ *         accTypeName:
+ *           type: string
+ *           description: Account type name
  *       required:
  *         - email
+ *         - name
  *         - username
  *         - password
+ *         - accTypeName
+ * 
  *     LoginInputDTO:
  *       type: object
  *       properties:
  *         email:
  *           type: string
  *           format: email
- *           description: User's email
+ *           description: User's email (optional)
+ *         username:
+ *           type: string
+ *           description: User's username (optional)
  *         password:
  *           type: string
- *           format: password
  *           description: User's password
  *       required:
- *         - email
  *         - password
+ * 
  */
+
 
 /**
  * @swagger
- * /signup:
+ * /auth/signup:
  *   post:
  *     summary: Register a new user
  *     tags: [Auth]
@@ -95,7 +106,7 @@ authRouter.post('/login', BodyValidation(LoginInputDTO), async (req: Request, re
 
 /**
  * @swagger
- * /login:
+ * /auth/login:
  *   post:
  *     summary: Login an existing user
  *     tags: [Auth]

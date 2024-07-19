@@ -56,7 +56,7 @@ export class PostServiceImpl implements PostService {
     
   }
 
-  async getPost (userId: string, postId: string): Promise<PostDTO> {
+  async getPost (userId: string, postId: string): Promise<ExtendedPostDTO> {
     try {
       const post = await this.postRepository.getById(postId)
       if (!post) throw new NotFoundException('Post')
@@ -81,6 +81,30 @@ export class PostServiceImpl implements PostService {
     
   }
 
+  async incrementPostRetweetsCount(postId: string): Promise <void> {
+    try {
+      await this.postRepository.incrementRetweetsCount(postId)
+    } catch (error) {
+      throw new InternalServerErrorException("incrementPostReactionCount")
+    }
+  }
+
+  async incrementPostLikesCount(postId: string): Promise <void> {
+    try {
+      await this.postRepository.incrementLikesCount(postId)
+    } catch (error) {
+      throw new InternalServerErrorException("incrementPostReactionCount")
+    }
+  }
+  
+  async incrementPostRepliesCount(postId: string): Promise <void> {
+    try {
+      await this.postRepository.incrementRepliesCount(postId)
+    } catch (error) {
+      throw new InternalServerErrorException("incrementPostReactionCount")
+    }
+  }
+
   async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
     try {
       //Gets id of all authors followed by user
@@ -100,14 +124,17 @@ export class PostServiceImpl implements PostService {
     
   }
 
-  async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
+  async getPostsByAuthor (userId: any, authorId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
     try {
       const canAccess = await this.canAccessUsersPosts(userId, authorId)
       if (!canAccess) throw new NotFoundException('Posts')
 
-      const posts =  await this.postRepository.getByAuthorId(authorId)
+      const posts =  await this.postRepository.getByAuthorId(authorId, options)
       
       const processedPosts = await Promise.all(posts.map(async (post) => {
+        if(post.author.profilePicture) {
+          post.author.profilePicture = await getPresignedGetURL(post.author.profilePicture)
+        }
         if (post.images && post.images.length > 0) {
           const urlPromises = post.images.map(async (image) => {
             return await getPresignedGetURL(image);
@@ -145,10 +172,15 @@ export class PostServiceImpl implements PostService {
     
   }
 
-  async getCommentsFromPost (userId: string, postId: string): Promise <PostDTO[] | []> {
+  async getCommentsFromPost (userId: string, postId: string, options:{ limit?: number, before?: string, after?: string }): Promise <ExtendedPostDTO[] | []> {
     try {
-      const post = await this.getPost(userId, postId)
-      return post.replies ?? []
+      const replies = await this.postRepository.getCommentsByMainPostId(postId, options)
+      replies.map(async (reply) => {
+        if(reply.author.profilePicture){
+          reply.author.profilePicture = await getPresignedGetURL(reply.author.profilePicture)
+        }
+      })
+      return replies
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getCommentsFromPost")

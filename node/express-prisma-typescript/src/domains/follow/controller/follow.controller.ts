@@ -46,3 +46,117 @@ followRouter.get('/following', async (req: Request, res: Response) => {
 
     return res.status(HttpStatus.OK).send(following)
 })
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     FollowResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Success message
+ *     UserId:
+ *       type: string
+ *       description: The ID of the user
+ */
+
+/**
+ * @swagger
+ * /follower/follow/{userId}:
+ *   post:
+ *     summary: Follow a user
+ *     tags: [Follow]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the user to follow
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully followed the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FollowResponse'
+ *       400:
+ *         description: Invalid user ID
+ */
+
+/**
+ * @swagger
+ * /follower/unfollow/{userId}:
+ *   post:
+ *     summary: Unfollow a user
+ *     tags: [Follow]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the user to unfollow
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully unfollowed the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FollowResponse'
+ *       400:
+ *         description: Invalid user ID
+ */
+
+/**
+ * @swagger
+ * /follower/followers:
+ *   get:
+ *     summary: Get the list of followers for the current user
+ *     tags: [Follow]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the list of followers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *       400:
+ *         description: Invalid request
+ */
+
+/**
+ * @swagger
+ * /follower/following:
+ *   get:
+ *     summary: Get the list of users the current user is following
+ *     tags: [Follow]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the list of users being followed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *       400:
+ *         description: Invalid request
+ */

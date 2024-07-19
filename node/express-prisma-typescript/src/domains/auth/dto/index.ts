@@ -24,7 +24,7 @@ export class SignupInputDTO {
     password: string
 
   @IsOptional()
-    accTypeName: string
+    accTypeName?: string
 
     
   constructor (email: string, username: string, password: string, accTypeName: string, name: string) {

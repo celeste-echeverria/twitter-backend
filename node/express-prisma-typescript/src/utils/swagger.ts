@@ -9,6 +9,26 @@ const options = {
       title: 'Twitter Backend',
       version: '1.0.0',
     },
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        BearerAuth: [],
+      },
+    ],
+    servers: [
+    {
+      url: 'http://localhost:8080/api',
+      description: 'Local server'
+    }
+  ],
   },
   apis: ['src/**/*.controller.{ts,js}'], 
 };

@@ -7,5 +7,6 @@ export interface ReactionRepository {
     getReactionsByUserId: (authorId: string) => Promise <ReactionDTO[]>
     getReactionById: (id: string) => Promise <ReactionDTO | null>
     getReactionsByPostId: (postId: string) => Promise <ReactionDTO[]>
+    getReactionsByUserIdAndType: (userId: string, reactionTypeId: string) => Promise<ReactionDTO[]>
 }
 

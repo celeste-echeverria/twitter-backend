@@ -6,4 +6,5 @@ export interface ReactionService {
     getUserReactions: (userId: string) => Promise <ReactionDTO[]>
     getPostReactions: (postId: string) => Promise <ReactionDTO[]>
     getReaction: (reactionId: string) => Promise <ReactionDTO | null>
+    getUserLikesOrRetweets: (reactionId: string, reactionTypeId: string) => Promise <ReactionDTO[]>
 }

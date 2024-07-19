@@ -24,12 +24,10 @@ export class AuthServiceImpl implements AuthService {
     try {
 
       let existingUser
-
       try{
         existingUser = await this.userService.getUserByEmailOrUsername(data.email, data.username)
       } catch (error) {
         if (error instanceof NotFoundException) existingUser = null  
-        throw error; 
       }
       
       if (existingUser) throw new ConflictException('USER_ALREADY_EXISTS')

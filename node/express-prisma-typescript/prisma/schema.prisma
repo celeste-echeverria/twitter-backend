@@ -82,6 +82,10 @@ model Post {
   author    User  @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
 
   reactions Reaction[]
+  qtyTotalReactions Int @default(0)
+  qtyLikes Int @default(0)
+  qtyRetweets Int @default(0)
+  qtyComments Int @default(0)
 }
 
 model ReactionType {

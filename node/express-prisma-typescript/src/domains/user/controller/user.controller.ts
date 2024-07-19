@@ -64,5 +64,162 @@ userRouter.delete('/del', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK)
 })
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The user ID
+ *         username:
+ *           type: string
+ *           description: The username of the user
+ *         email:
+ *           type: string
+ *           description: The email of the user
+ *         name:
+ *           type: string
+ *           description: The name of the user
+ *         profileUrl:
+ *           type: string
+ *           description: The URL of the user's profile picture
+ */
 
+/**
+ * @swagger
+ * /user:
+ *   get:
+ *     summary: Get user recommendations
+ *     tags: [User]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Limit the number of users returned
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *         description: Number of users to skip
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user recommendations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid input data
+ */
 
+/**
+ * @swagger
+ * /user/me:
+ *   get:
+ *     summary: Get current user's profile
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: User not found
+ */
+
+/**
+ * @swagger
+ * /user/profile-upload-url:
+ *   get:
+ *     summary: Get pre-signed URL for profile picture upload
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved pre-signed URL
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *       500:
+ *         description: Error getting pre-signed URL
+ */
+
+/**
+ * @swagger
+ * /user/profile-download-url:
+ *   get:
+ *     summary: Get pre-signed URL for profile picture download
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved pre-signed URL
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *       500:
+ *         description: Error getting pre-signed URL
+ */
+
+/**
+ * @swagger
+ * /user/{userId}:
+ *   get:
+ *     summary: Get user profile by ID
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the user to retrieve
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: User not found
+ */
+
+/**
+ * @swagger
+ * /user/del:
+ *   delete:
+ *     summary: Delete the current user
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the user
+ *       404:
+ *         description: User not found
+ */

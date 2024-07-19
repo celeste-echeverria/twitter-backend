@@ -24,7 +24,9 @@ export class ReactionServiceImpl implements ReactionService {
             const reactionType = await this.reactionTypeService.getReactionByTypeName(reactionTypeName)
             const reaction = await this.reactionRepository.getUserReactionFromPost(userId, postId, reactionType.id)
             if (reaction) throw new BadRequestException("Reaction")
-
+            if (reactionTypeName == "Retweet") await this.postService.incrementPostRetweetsCount(postId)
+            if (reactionTypeName == "Like") await this.postService.incrementPostLikesCount(postId)
+            
             return await this.reactionRepository.create(reactionType.id, userId, postId)
 
         } catch (error) {
@@ -77,5 +79,15 @@ export class ReactionServiceImpl implements ReactionService {
             throw new InternalServerErrorException("getReaction")
         }
     } 
+
+    async getUserLikesOrRetweets(userId: string, reactionTypeName: string): Promise <ReactionDTO[]> {
+        try {
+            const reactionType =  await this.reactionTypeService.getReactionByTypeName(reactionTypeName)
+            if (!reactionType) throw new NotFoundException("Reaction Type")
+            return await this.reactionRepository.getReactionsByUserIdAndType(userId, reactionType.id)
+        } catch (error) {
+            throw new InternalServerErrorException("getUserLikesOrRetweets")
+        }
+    }
 
 }

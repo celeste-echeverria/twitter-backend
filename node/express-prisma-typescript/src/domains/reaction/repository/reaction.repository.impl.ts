@@ -44,6 +44,16 @@ export class ReactionRepositoryImpl implements ReactionRepository {
         });
         return reactions.map(reaction => new ReactionDTO(reaction))
     }
+
+    async getReactionsByUserIdAndType(userId: string, reactionTypeId: string): Promise<ReactionDTO[]> {
+        const reactions = await this.db.reaction.findMany({
+            where: { 
+                userId,
+                reactionTypeId
+            },
+        });
+        return reactions.map(reaction => new ReactionDTO(reaction))
+    }
     
     async getReactionById(id: string): Promise<ReactionDTO | null> {
         const reaction = await this.db.reaction.findUnique({

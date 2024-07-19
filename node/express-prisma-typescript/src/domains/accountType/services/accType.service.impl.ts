@@ -32,6 +32,7 @@ export class AccTypeServiceImpl implements AccTypeService{
             if (!accType) throw new NotFoundException('Account Type')
             return accType
         } catch (error) {
+            console.log(error)
             if (error instanceof NotFoundException) throw error
             throw new InternalServerErrorException("getAccTypeById")
         }
@@ -44,6 +45,7 @@ export class AccTypeServiceImpl implements AccTypeService{
             if (!accType) throw new NotFoundException('Account Type')
             return accType
         } catch (error) {
+            console.log(error)
             if (error instanceof NotFoundException) throw error
             throw new InternalServerErrorException("getAccTypeByName")
         }   

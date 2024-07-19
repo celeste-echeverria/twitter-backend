@@ -21,18 +21,18 @@ export class UserServiceImpl implements UserService {
   async createUser (data: SignupInputDTO): Promise<UserDTO> {
     try {
       //get Public account type
-      const accType = await this.accTypeService.getAccTypeByTypeName(data.accTypeName)
+      const accType = await this.accTypeService.getAccTypeByTypeName(data.accTypeName || "Public")
       if(!accType) throw new NotFoundException('Account Type')
 
       const userData = {
         ...data,
         accTypeId: accType.id,
-        accTypeName: accType.typeName
-      };
-      //revisar!!!!!!!
-      return await this.userRepository.create(userData)
+      }
+      const { accTypeName, ...createData } = userData;
+      return await this.userRepository.create(createData)
 
     } catch (error) {
+      console.log(error)
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("createUser")
     }
