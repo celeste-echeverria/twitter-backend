@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { OffsetPagination } from '@types'
 import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
 import { UserRepository } from './user.repository'
+import { contains } from 'class-validator'
 
 export class UserRepositoryImpl implements UserRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -116,6 +117,22 @@ export class UserRepositoryImpl implements UserRepository {
       }
     })
     return user ? new UserViewDTO(user) : null
+  }
+
+  async getUsersMatchingUsername(username: string, options: OffsetPagination): Promise<UserViewDTO[]> {
+    const users = await this.db.user.findMany({
+      take: options.limit ? options.limit : undefined,
+      skip: options.skip ? options.skip : undefined,
+      where: {
+        username: {
+          contains: username
+        }
+      },
+      orderBy: {
+        username: 'asc'
+      }
+    })
+    return users ? users.map(user => new UserViewDTO(user)) : []
   }
 
 }

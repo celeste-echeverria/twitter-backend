@@ -22,13 +22,20 @@ export class PostRepositoryImpl implements PostRepository {
     return new PostDTO(post);
   }
 
-  async getAllByDatePaginated (authorsIds: string[], options: CursorPagination): Promise<PostDTO[]> {
+  async getAllByDatePaginated (authorsIds: string[], options: CursorPagination): Promise<ExtendedPostDTO[]> {
     const posts = await this.db.post.findMany({
       cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
       skip: options.after ?? options.before ? 1 : undefined,
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
       where:{
         authorId : {in: authorsIds}
+      },
+      include:{
+        author: {
+          select:{
+            id: true, name: true, username: true, email: true, profilePicture: true
+          }
+        }
       },
       orderBy: [
         {
@@ -39,7 +46,7 @@ export class PostRepositoryImpl implements PostRepository {
         }
       ]
     })
-    return posts.map(post => new PostDTO(post))
+    return posts.map(post => new ExtendedPostDTO(post))
   }
 
   async delete (postId: string): Promise<void> {

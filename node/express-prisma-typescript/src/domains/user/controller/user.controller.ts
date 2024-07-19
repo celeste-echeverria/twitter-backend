@@ -24,7 +24,7 @@ userRouter.get('/', async (req: Request, res: Response) => {
 userRouter.get('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
-  const user = await service.getUserView(userId)
+  const user = await service.getUserView(userId, userId)
   return res.status(HttpStatus.OK).json(user)
 })
 
@@ -52,9 +52,10 @@ userRouter.get('/profile-download-url', async (req: Request, res: Response) => {
 
 userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId: otherUserId } = req.params
-  const user = await service.getUserView(otherUserId)
+  const { userId } = res.locals.context
+  const {userview, following} = await service.getUserView(userId, otherUserId)
 
-  return res.status(HttpStatus.OK).json(user)
+  return res.status(HttpStatus.OK).json({userview, following})
 })
 
 userRouter.delete('/del', async (req: Request, res: Response) => {
@@ -62,6 +63,13 @@ userRouter.delete('/del', async (req: Request, res: Response) => {
   await service.deleteUser(userId)
 
   return res.status(HttpStatus.OK)
+})
+
+userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
+  const { limit, skip } = req.query as Record<string, string>
+  const { username } = req.params
+  const users = await service.getUsersMatchingUsername(username, { limit: Number(limit), skip: Number(skip) })
+  return res.status(HttpStatus.OK).json(users)
 })
 
 /**
@@ -222,4 +230,46 @@ userRouter.delete('/del', async (req: Request, res: Response) => {
  *         description: Successfully deleted the user
  *       404:
  *         description: User not found
+ */
+
+/**
+ * @swagger
+ * /user/by_username/{username}:
+ *   get:
+ *     summary: Get users matching the given username
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The username to search for
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           required: false
+ *           description: The maximum number of records to return
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *           required: false
+ *           description: The number of records to skip
+ *     responses:
+ *       200:
+ *         description: A list of users matching the username
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/UserViewDTO'
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Not found
+ *       500:
+ *         description: Internal server error
  */

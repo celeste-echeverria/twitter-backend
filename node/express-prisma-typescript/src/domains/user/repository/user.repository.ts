@@ -13,5 +13,6 @@ export interface UserRepository {
   updateProfilePicture: (userId: string, fileName: string) => Promise <UserDTO> 
   getProfilePictureById: (userId: string) => Promise <string | null>
   getViewById: (userId: any) => Promise<UserViewDTO | null> 
+  getUsersMatchingUsername: (username: string, options: OffsetPagination) => Promise<UserViewDTO[]> 
 
 }

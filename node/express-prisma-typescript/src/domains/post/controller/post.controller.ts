@@ -290,10 +290,10 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /post/by_user/{userId}:
+ * /posts/by_user/{userId}:
  *   get:
- *     summary: Get posts by a specific user
- *     tags: [Post]
+ *     summary: Get posts by user ID
+ *     tags: [Posts]
  *     parameters:
  *       - in: path
  *         name: userId
@@ -301,58 +301,40 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *           type: string
  *         required: true
  *         description: The ID of the user whose posts to retrieve
- *     security:
- *       - BearerAuth: []
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         required: false
+ *         description: The maximum number of posts to return
+ *       - in: query
+ *         name: before
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Fetch posts created before this cursor
+ *       - in: query
+ *         name: after
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Fetch posts created after this cursor
  *     responses:
  *       200:
- *         description: Successfully retrieved posts by the user
+ *         description: A list of posts by the specified user
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                     description: The ID of the post
- *                   content:
- *                     type: string
- *                     description: Content of the post
- *       404:
- *         description: User not found
- */
-
-/**
- * @swagger
- * /post/:
- *   post:
- *     summary: Create a new post
- *     tags: [Post]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreatePostInputDTO'
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       201:
- *         description: Successfully created the post
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   description: The ID of the created post
- *                 content:
- *                   type: string
- *                   description: Content of the created post
+ *                 $ref: '#/components/schemas/Post'
  *       400:
  *         description: Invalid input data
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
  */
 
 /**

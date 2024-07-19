@@ -1,5 +1,5 @@
 import { InternalServerErrorException, NotFoundException } from '@utils/errors'
-import { OffsetPagination } from 'types'
+import { CursorPagination, OffsetPagination } from 'types'
 import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
 import { UserRepository, UserRepositoryImpl } from '../repository'
 
@@ -157,17 +157,42 @@ export class UserServiceImpl implements UserService {
     } 
   }
 
-  async getUserView(userId: string): Promise <UserViewDTO> {
+  async getUserView(userId: string, otherUserId: string): Promise <{userview: UserViewDTO, following: string}> {
     try {
-      const user = await this.userRepository.getViewById(userId)
+      const user = await this.userRepository.getViewById(otherUserId)
       if (!user) throw new NotFoundException("User")
-      if (!user.profilePicture) return new UserViewDTO(user)
-      
-      const profileUrl = await getPresignedGetURL(user.profilePicture)
-      return new UserViewDTO({...user, profilePicture: profileUrl})
+      if (user.profilePicture){
+        user.profilePicture = await getPresignedGetURL(user.profilePicture)
+      } 
+      let following: string
+      if (await this.followService.userIsFollowing(userId, otherUserId)) {
+        following = `${user.username} is following you.`
+      } else {
+        if (userId === otherUserId) following = "CANNOT_FOLLOW_SELF"
+        following = `${user.username} is not following you.`
+      }
+      const userview = new UserViewDTO(user)
+      return ({userview, following})
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getUserView")
     }
   }
+
+  async getUsersMatchingUsername(username: string, options: OffsetPagination): Promise <UserViewDTO[]> {
+    try {
+      const users = await this.userRepository.getUsersMatchingUsername(username, options)
+      users.map(async (user) => {
+        if (user.profilePicture) {
+          user.profilePicture = await getPresignedGetURL(user.profilePicture)
+        }
+      })
+      return users
+    } catch (error) {
+      throw new InternalServerErrorException("getUsersMatchingUsername")
+    }
+  }
+
 }
+
+

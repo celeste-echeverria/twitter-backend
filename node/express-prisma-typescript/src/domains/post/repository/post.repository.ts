@@ -5,7 +5,7 @@ import { Post, User } from '@prisma/client'
 
 export interface PostRepository {
   create: (author: string, data: CreatePostInputDTO, mainPostId?: string) => Promise<PostDTO>
-  getAllByDatePaginated: (authorsIds: string[], options: CursorPagination) => Promise<PostDTO[]>
+  getAllByDatePaginated: (authorsIds: string[], options: CursorPagination) => Promise<ExtendedPostDTO[]>
   delete: (postId: string) => Promise<void>
   getById: (postId: string) => Promise<ExtendedPostDTO | null>
   getByAuthorId: (authorId: string, options: CursorPagination) => Promise<ExtendedPostDTO[]>

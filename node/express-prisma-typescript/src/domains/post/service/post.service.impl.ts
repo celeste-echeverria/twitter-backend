@@ -105,7 +105,7 @@ export class PostServiceImpl implements PostService {
     }
   }
 
-  async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
+  async getLatestPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
     try {
       //Gets id of all authors followed by user
       const followedAuthorIds = await this.followService.getFollowedUsersId(userId)
