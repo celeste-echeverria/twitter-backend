@@ -76,25 +76,64 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     UserDTO:
  *       type: object
  *       properties:
  *         id:
  *           type: string
- *           description: The user ID
+ *           description: The unique identifier of the user
+ *         name:
+ *           type: string
+ *           nullable: true
+ *           description: The name of the user
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The timestamp when the user was created
+ *         accTypeId:
+ *           type: string
+ *           description: The identifier of the account type
+ *         accTypeName:
+ *           type: string
+ *           nullable: true
+ *           description: The name of the account type
+ *         profilePicture:
+ *           type: string
+ *           nullable: true
+ *           description: The path of the user's profile picture on AWS S3 bucket
+ *     ExtendedUserDTO:
+ *       allOf:
+ *         - $ref: '#/components/schemas/UserDTO'
+ *         - type: object
+ *           properties:
+ *             email:
+ *               type: string
+ *               description: The email address of the user
+ *             username:
+ *               type: string
+ *               description: The username of the user
+ *             password:
+ *               type: string
+ *               description: The password of the user
+ *     UserViewDTO:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The unique identifier of the user
+ *         name:
+ *           type: string
+ *           nullable: true
+ *           description: The name of the user
  *         username:
  *           type: string
  *           description: The username of the user
- *         email:
+ *         profilePicture:
  *           type: string
- *           description: The email of the user
- *         name:
- *           type: string
- *           description: The name of the user
- *         profileUrl:
- *           type: string
- *           description: The URL of the user's profile picture
+ *           nullable: true
+ *           description: The path of the user's profile picture on AWS S3 bucket
  */
+
 
 /**
  * @swagger
@@ -107,25 +146,21 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  *         name: limit
  *         schema:
  *           type: integer
- *         description: Limit the number of users returned
  *       - in: query
  *         name: skip
  *         schema:
  *           type: integer
- *         description: Number of users to skip
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved user recommendations
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
  *       400:
  *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       500:
+ *         description: Internal server error
  */
 
 /**
@@ -139,12 +174,12 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  *     responses:
  *       200:
  *         description: Successfully retrieved user profile
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Internal server error
  */
 
 /**
@@ -158,13 +193,8 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  *     responses:
  *       200:
  *         description: Successfully retrieved pre-signed URL
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 url:
- *                   type: string
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       500:
  *         description: Error getting pre-signed URL
  */
@@ -180,13 +210,8 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  *     responses:
  *       200:
  *         description: Successfully retrieved pre-signed URL
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 url:
- *                   type: string
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       500:
  *         description: Error getting pre-signed URL
  */
@@ -209,12 +234,12 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  *     responses:
  *       200:
  *         description: Successfully retrieved user profile
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
- *         description: User not found
+ *         description: User not found or cannot access
+ *       500:
+ *         description: Internal server error
  */
 
 /**
@@ -228,8 +253,10 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  *     responses:
  *       200:
  *         description: Successfully deleted the user
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
- *         description: User not found
+ *         description: User not found or cannot access
  */
 
 /**
@@ -250,26 +277,20 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  *         schema:
  *           type: integer
  *           required: false
- *           description: The maximum number of records to return
  *       - in: query
  *         name: skip
  *         schema:
  *           type: integer
  *           required: false
- *           description: The number of records to skip
  *     responses:
  *       200:
  *         description: A list of users matching the username
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/UserViewDTO'
  *       400:
  *         description: Bad request
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
- *         description: Not found
+ *         description: Not found or cannot access
  *       500:
  *         description: Internal server error
  */

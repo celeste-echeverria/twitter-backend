@@ -7,6 +7,10 @@ import { Constants, NodeEnv, Logger } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
 import { setupSwagger } from '@utils/swagger'
+import { Server as SocketIOServer } from 'socket.io'
+import { createServer } from 'http'
+//import setupSocket from '@utils/socket'; // Importa la configuración de Socket.IO
+
 
 const app = express()
 
@@ -33,6 +37,14 @@ app.use(ErrorHandling)
 
 setupSwagger(app);
 
-app.listen(Constants.PORT, () => {
-  Logger.info(`Server listening on port ${Constants.PORT}`)
+const httpServer = createServer(app);
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: '*',
+  },
 })
+//setupSocket(io)
+
+httpServer.listen(Constants.PORT, () => {
+  Logger.info(`Server listening on port ${Constants.PORT}`);
+});

@@ -100,8 +100,8 @@ authRouter.post('/login', BodyValidation(LoginInputDTO), async (req: Request, re
  *                   type: string
  *       409:
  *         description: User already exists
- *       400:
- *         description: Invalid input data
+ *       500:
+ *         description: Internal server error at 'signup'
  */
 
 /**
@@ -128,6 +128,6 @@ authRouter.post('/login', BodyValidation(LoginInputDTO), async (req: Request, re
  *                   type: string
  *       401:
  *         description: Unauthorized, invalid credentials
- *       400:
- *         description: Invalid input data
+ *       500:
+ *         description: Internal server error at 'login'
  */

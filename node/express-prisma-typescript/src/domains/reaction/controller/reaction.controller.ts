@@ -90,12 +90,13 @@ reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Res
  *     responses:
  *       200:
  *         description: Successfully added the reaction
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Reaction'
  *       400:
  *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       500:
+ *         description: Internal Server Error
+ * 
  */
 
 /**
@@ -116,8 +117,12 @@ reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Res
  *     responses:
  *       200:
  *         description: Successfully deleted the reaction
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
  *         description: Reaction not found
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -138,18 +143,16 @@ reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Res
  *         schema:
  *           type: string
  *         required: true
- *         description: The type of reaction (e.g., like, retweet)
+ *         description: The type of reaction (e.g., likes, retweets)
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved the reactions
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Reaction'
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
  *         description: Reactions not found
+ *       500:
+ *         description: Internal Server Error
  */

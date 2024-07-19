@@ -6,7 +6,8 @@ import {
   generateAccessToken,
   InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
+  ValidationException
 } from '@utils'
 
 import { LoginInputDTO, SignupInputDTO, TokenDTO } from '../dto'
@@ -47,15 +48,14 @@ export class AuthServiceImpl implements AuthService {
   async login (data: LoginInputDTO): Promise<TokenDTO> {
     try{
       const user = await this.userService.getUserByEmailOrUsername(data.email, data.username)
-      if (!user) throw new NotFoundException('User')
 
       const isCorrectPassword = await checkPassword(data.password, user.password)
-      if (!isCorrectPassword) throw new UnauthorizedException('INCORRECT_PASSWORD')
+      if (!isCorrectPassword) throw new UnauthorizedException('Invalid credentials')
 
       const token = generateAccessToken({ userId: user.id })
       return { token }
     } catch (error) {
-      if (error instanceof NotFoundException) throw error
+      if (error instanceof NotFoundException) throw new UnauthorizedException("Invalid credentials")
       if (error instanceof UnauthorizedException) throw error
       throw new InternalServerErrorException("login")
     }

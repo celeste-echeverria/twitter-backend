@@ -105,8 +105,61 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *         content:
  *           type: string
  *           description: Content of the post
+ *         images:
+ *           type: string
+ *           description: (Optional) Images path on AWS S3 bucket
  *       required:
  *         - content
+ */
+
+/**
+ * @swagger
+ * /posts:
+ *   post:
+ *     summary: Create a new post
+ *     tags: [Post]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreatePostInputDTO'
+ *       security:
+ *         - BearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Post created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The unique identifier of the post
+ *                 content:
+ *                   type: string
+ *                   description: The content of the post
+ *                 images:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     format: uri
+ *                   description: Array of image URLs associated with the post
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the post was created
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: The timestamp when the post was last updated
+ *       400:
+ *         description: Bad request, e.g., invalid input data
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -120,19 +173,12 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully retrieved the upload URL
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 fileName:
- *                   type: string
- *                   description: The name of the file
- *                 url:
- *                   type: string
- *                   description: The pre-signed URL for uploading the image
  *       400:
  *         description: Invalid request
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -159,21 +205,14 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully added the comment
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   description: The ID of the comment
- *                 content:
- *                   type: string
- *                   description: Content of the comment
  *       400:
  *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
- *         description: Post not found
+ *         description: Post not found or not following private account
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -194,21 +233,12 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully retrieved comments
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                     description: The ID of the comment
- *                   content:
- *                     type: string
- *                     description: Content of the comment
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
- *         description: Post not found
+ *         description: Post not found or not following private account
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -222,37 +252,25 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *         name: limit
  *         schema:
  *           type: integer
- *         description: Number of posts to return
  *       - in: query
  *         name: before
  *         schema:
  *           type: string
- *         description: Fetch posts before this timestamp
  *       - in: query
  *         name: after
  *         schema:
  *           type: string
- *         description: Fetch posts after this timestamp
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved the latest posts
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                     description: The ID of the post
- *                   content:
- *                     type: string
- *                     description: Content of the post
  *       400:
  *         description: Invalid request
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -273,19 +291,12 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully retrieved the post
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   description: The ID of the post
- *                 content:
- *                   type: string
- *                   description: Content of the post
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
- *         description: Post not found
+ *         description: Post not found or not following private account
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -293,7 +304,7 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  * /posts/by_user/{userId}:
  *   get:
  *     summary: Get posts by user ID
- *     tags: [Posts]
+ *     tags: [Post]
  *     parameters:
  *       - in: path
  *         name: userId
@@ -307,32 +318,25 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *           type: integer
  *           default: 10
  *         required: false
- *         description: The maximum number of posts to return
  *       - in: query
  *         name: before
  *         schema:
  *           type: string
  *         required: false
- *         description: Fetch posts created before this cursor
  *       - in: query
  *         name: after
  *         schema:
  *           type: string
  *         required: false
- *         description: Fetch posts created after this cursor
  *     responses:
  *       200:
  *         description: A list of posts by the specified user
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Post'
  *       400:
  *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
- *         description: User not found
+ *         description: User not found or not following private account
  *       500:
  *         description: Internal server error
  */
@@ -355,6 +359,8 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully deleted the post
+ *       401:
+ *         description: Unauthorized. Must login to access
  *       404:
- *         description: Post not found
+ *         description: Post not found or not following private account
  */

@@ -56,12 +56,6 @@ followRouter.get('/following', async (req: Request, res: Response) => {
  *       scheme: bearer
  *       bearerFormat: JWT
  *   schemas:
- *     FollowResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *           description: Success message
  *     UserId:
  *       type: string
  *       description: The ID of the user
@@ -85,12 +79,14 @@ followRouter.get('/following', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully followed the user
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/FollowResponse'
  *       400:
  *         description: Invalid user ID
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       409:
+ *         description: Conflict. Already following user
+ *       500:
+ *         description: Internal server error
  */
 
 /**
@@ -111,12 +107,14 @@ followRouter.get('/following', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully unfollowed the user
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/FollowResponse'
  *       400:
  *         description: Invalid user ID
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       409:
+ *         description: Conflict. Not following user
+ *       500:
+ *         description: Internal server error
  */
 
 /**
@@ -130,14 +128,12 @@ followRouter.get('/following', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully retrieved the list of followers
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: string
  *       400:
  *         description: Invalid request
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       500:
+ *         description: Internal server error
  */
 
 /**
@@ -151,12 +147,10 @@ followRouter.get('/following', async (req: Request, res: Response) => {
  *     responses:
  *       200:
  *         description: Successfully retrieved the list of users being followed
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: string
  *       400:
  *         description: Invalid request
+ *       401:
+ *         description: Unauthorized. Must login to access
+ *       500:
+ *         description: Internal server error
  */
