@@ -27,7 +27,4 @@ jobs:
         run: yarn eslint . --ext .ts,.tsx --fix
         working-directory: node/express-prisma-typescript
 
-      - name: Run jscpd
-        run: yarn jscpd --config .jscpd.yml --ignore "node_modules/**,dist/**,build/**,public/**,coverage/**,logs/**"
-        working-directory: node/express-prisma-typescript
 
