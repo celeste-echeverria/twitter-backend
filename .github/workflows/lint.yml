@@ -24,7 +24,7 @@ jobs:
         working-directory: node/express-prisma-typescript
 
       - name: Run ESLint
-        run: yarn eslint . --ext .ts,.tsx 
+        run: yarn eslint . --ext .ts,.tsx --fix
         working-directory: node/express-prisma-typescript
 
       - name: Run jscpd
