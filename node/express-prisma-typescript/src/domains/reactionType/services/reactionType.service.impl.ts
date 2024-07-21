@@ -1,4 +1,5 @@
-import { InternalServerErrorException, NotFoundException, db } from "@utils";
+import { InternalServerErrorException, NotFoundException } from "@utils/errors";
+import { db } from '@utils/database'
 import { ReactionTypeRepository } from "../repository/reactionType.repository";
 import { ReactionTypeRepositoryImpl } from "../repository/reactionType.repository.impl";
 import { ReactionTypeService } from "./reactionType.service";

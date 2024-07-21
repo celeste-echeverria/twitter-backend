@@ -15,7 +15,7 @@ export class AccountTypeRepositoryImpl implements AccountTypeRepository {
     };
     
     async delete (accTypeId: string): Promise<void> {
-        const accType = await this.db.accountType.delete({
+        await this.db.accountType.delete({
             where: {
                 id: accTypeId,
             },

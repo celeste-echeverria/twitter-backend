@@ -15,7 +15,7 @@ export class ReactionTypeRepositoryImpl implements ReactionTypeRepository {
     };
     
     async delete (reactionTypeId: string): Promise<void> {
-        const reactionType = await this.db.reactionType.delete({
+        await this.db.reactionType.delete({
             where: {
                 id: reactionTypeId,
             },

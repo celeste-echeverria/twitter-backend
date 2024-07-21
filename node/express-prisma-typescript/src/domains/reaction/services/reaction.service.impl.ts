@@ -1,4 +1,5 @@
-import { BadRequestException, ForbiddenException, InternalServerErrorException, NotFoundException, db } from "@utils";
+import { BadRequestException, ForbiddenException, InternalServerErrorException, NotFoundException} from "@utils/errors";
+import { db } from '@utils/database'
 import { ReactionRepositoryImpl } from "../repository/reaction.repository.impl";
 import { ReactionService } from "./reaction.service";
 import { ReactionRepository } from "../repository/reaction.repository";
@@ -22,9 +23,11 @@ export class ReactionServiceImpl implements ReactionService {
             if (!post) throw new NotFoundException("Post")
 
             const reactionType = await this.reactionTypeService.getReactionByTypeName(reactionTypeName)
+            if(!reactionType) throw new NotFoundException("Reaction Type")
+
             const reaction = await this.reactionRepository.getUserReactionFromPost(userId, postId, reactionType.id)
             if (reaction) throw new BadRequestException("Reaction")
-            if (reactionTypeName == "Retweet") await this.postService.incrementPostRetweetsCount(postId)
+            if (reactionTypeName === "Retweet") await this.postService.incrementPostRetweetsCount(postId)
             if (reactionTypeName == "Like") await this.postService.incrementPostLikesCount(postId)
             
             return await this.reactionRepository.create(reactionType.id, userId, postId)
@@ -84,8 +87,10 @@ export class ReactionServiceImpl implements ReactionService {
         try {
             const reactionType =  await this.reactionTypeService.getReactionByTypeName(reactionTypeName)
             if (!reactionType) throw new NotFoundException("Reaction Type")
-            return await this.reactionRepository.getReactionsByUserIdAndType(userId, reactionType.id)
+            const reactions = await this.reactionRepository.getReactionsByUserIdAndType(userId, reactionType.id)
+            return reactions ?? []
         } catch (error) {
+            if (error instanceof NotFoundException) throw error
             throw new InternalServerErrorException("getUserLikesOrRetweets")
         }
     }

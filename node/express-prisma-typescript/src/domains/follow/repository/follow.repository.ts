@@ -1,5 +1,4 @@
 import { UserDTO } from "@domains/user/dto";
-import { OffsetPagination } from "@types";
 import { FollowDTO } from "../dto";
 
 export interface FollowRepository {

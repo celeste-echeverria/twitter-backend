@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { FollowRepository } from "./follow.repository";
 import { UserDTO } from "@domains/user/dto";
-import { OffsetPagination } from "@types";
 import { FollowDTO } from "../dto";
 
 
@@ -19,7 +18,7 @@ export class FollowRepositoryImpl implements FollowRepository{
     }
     
     async delete(followId: string): Promise<void> {
-        const follow = await this.db.follow.delete({
+        await this.db.follow.delete({
             where: {
                 id: followId,
             },
@@ -36,23 +35,21 @@ export class FollowRepositoryImpl implements FollowRepository{
         return followers.map(follow => new UserDTO(follow.follower));
     }
 
-    async getFollowing(userId: string): Promise<UserDTO[]> {
-        const following = await this.db.follow.findMany({
-          where: { followerId: userId },
-          include: { followed: true },
-          orderBy: [{ createdAt: 'desc' }],
+    private async getFollowingData(userId: string) {
+        return this.db.follow.findMany({
+            where: { followerId: userId },
+            include: { followed: true },
+            orderBy: [{ createdAt: 'desc' }],
         });
+    }
     
+    async getFollowing(userId: string): Promise<UserDTO[]> {
+        const following = await this.getFollowingData(userId);
         return following.map(follow => new UserDTO(follow.followed));
     }
     
     async getFollowedUsersIds(userId: string): Promise<string[]> {
-        const following = await this.db.follow.findMany({
-          where: { followerId: userId },
-          include: { followed: true },
-          orderBy: [{ createdAt: 'desc' }],
-        });
-    
+        const following = await this.getFollowingData(userId);
         return following.map(follow => follow.followedId);
     }
     

@@ -28,7 +28,6 @@ reactionRouter.delete('/:reactionId', async (req: Request, res: Response) => {
 })
 
 reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Response) => {
-  const { userId } = res.locals.context 
   const { authorId, reactionTypeName } = req.params
 
   //TO DO: Get reactions from user 

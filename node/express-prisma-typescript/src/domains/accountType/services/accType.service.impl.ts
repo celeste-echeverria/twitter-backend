@@ -1,4 +1,4 @@
-import { InternalServerErrorException, NotFoundException } from "@utils";
+import { InternalServerErrorException, NotFoundException } from "@utils/errors";
 import { AccountTypeDTO } from "../dto";
 import { AccountTypeRepository, AccountTypeRepositoryImpl } from "../repository";
 import { AccTypeService } from "./accType.service";
@@ -25,27 +25,25 @@ export class AccTypeServiceImpl implements AccTypeService{
         }
     }
 
-    async getAccTypeById (accTypeId: string): Promise<AccountTypeDTO> {
+    async getAccTypeById (accTypeId: string): Promise<AccountTypeDTO | null> {
 
         try{
             const accType = await this.repository.getById(accTypeId)
             if (!accType) throw new NotFoundException('Account Type')
             return accType
         } catch (error) {
-            console.log(error)
             if (error instanceof NotFoundException) throw error
             throw new InternalServerErrorException("getAccTypeById")
         }
     }
 
-    async getAccTypeByTypeName (accTypeName: string): Promise<AccountTypeDTO>{
+    async getAccTypeByTypeName (accTypeName: string): Promise<AccountTypeDTO | null>{
 
         try{
             const accType = await this.repository.getByTypeName(accTypeName)
             if (!accType) throw new NotFoundException('Account Type')
             return accType
         } catch (error) {
-            console.log(error)
             if (error instanceof NotFoundException) throw error
             throw new InternalServerErrorException("getAccTypeByName")
         }   
@@ -54,7 +52,7 @@ export class AccTypeServiceImpl implements AccTypeService{
     async getAccTypes() : Promise <AccountTypeDTO[]> {
         
         try{
-            return await this.getAccTypes()
+            return await this.repository.getAccTypes()
         } catch (error) {
             throw new InternalServerErrorException("getAccTypes")
         }

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
-import { Constants } from '@utils'
+import { Constants } from '@utils/constants'
 import { UnauthorizedException } from '@utils/errors'
 
 export const generateAccessToken = (payload: Record<string, string | boolean | number>): string => {

@@ -1,6 +1,7 @@
 import { FollowService } from "./follow.service";
 import { FollowRepository, FollowRepositoryImpl } from "../repository";
-import { BadRequestException, ConflictException, db, InternalServerErrorException } from "@utils";
+import { ConflictException, InternalServerErrorException } from "@utils/errors";
+import {db} from '@utils/database'
 import { FollowDTO } from "../dto";
 import { UserDTO } from "@domains/user/dto";
 
@@ -10,7 +11,7 @@ export class FollowServiceImpl implements FollowService {
     async follow(followerId: string, followedId: string): Promise <FollowDTO>{
         try{
             const follow = await this.repository.getFollowByUsersId(followerId, followedId)
-            if (followerId == followedId) throw new ConflictException('CANNOT_FOLLOW_SELF')
+            if (followerId === followedId) throw new ConflictException('CANNOT_FOLLOW_SELF')
             if (follow) throw new ConflictException('ALREADY_FOLLOWING_USER')
 
             return await this.repository.create(followerId, followedId)
@@ -24,7 +25,7 @@ export class FollowServiceImpl implements FollowService {
     async unfollow(followerId: string, followedId: string): Promise<void>{
         try {
             const follow = await this.repository.getFollowByUsersId(followerId, followedId)
-            if (followerId == followedId) throw new ConflictException('CANNOT_UNFOLLOW_SELF')
+            if (followerId === followedId) throw new ConflictException('CANNOT_UNFOLLOW_SELF')
             if (!follow) throw new ConflictException('NOT_FOLLOWING_USER')
 
             await this.repository.delete(follow.id)

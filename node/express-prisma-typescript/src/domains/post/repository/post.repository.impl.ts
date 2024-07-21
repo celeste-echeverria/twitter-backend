@@ -1,11 +1,10 @@
-import { PrismaClient, Post } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
 import { CursorPagination } from '@types'
 
 import { PostRepository } from '.'
 import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
-import { UserDTO } from '@domains/user/dto'
-import { connect } from 'http2'
+
 
 export class PostRepositoryImpl implements PostRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -165,6 +164,6 @@ export class PostRepositoryImpl implements PostRepository {
         qtyTotalReactions: 'desc'
       }
     })
-    return(posts ? posts.map(post => new ExtendedPostDTO(post)) : [])
+    return((posts.length>0) ? posts.map(post => new ExtendedPostDTO(post)) : [])
   }
 }
