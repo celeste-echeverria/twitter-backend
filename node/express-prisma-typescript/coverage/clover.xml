@@ -1,39 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1721573273447" clover="3.2.0">
-  <project timestamp="1721573273447" name="All files">
-    <metrics statements="363" coveredstatements="275" conditionals="102" coveredconditionals="53" methods="62" coveredmethods="48" elements="527" coveredelements="376" complexity="0" loc="363" ncloc="363" packages="7" files="7" classes="7"/>
-    <package name="accountType.services">
-      <metrics statements="26" coveredstatements="26" conditionals="5" coveredconditionals="4" methods="6" coveredmethods="6"/>
-      <file name="accType.service.impl.ts" path="/Users/celesteoriana/Documents/twitter-backend/node/express-prisma-typescript/src/domains/accountType/services/accType.service.impl.ts">
-        <metrics statements="26" coveredstatements="26" conditionals="5" coveredconditionals="4" methods="6" coveredmethods="6"/>
-        <line num="1" count="5" type="stmt"/>
-        <line num="3" count="5" type="stmt"/>
-        <line num="5" count="5" type="stmt"/>
-        <line num="7" count="5" type="stmt"/>
-        <line num="8" count="1" type="cond" truecount="0" falsecount="1"/>
-        <line num="12" count="2" type="stmt"/>
-        <line num="13" count="2" type="stmt"/>
-        <line num="15" count="1" type="stmt"/>
-        <line num="21" count="2" type="stmt"/>
-        <line num="22" count="2" type="stmt"/>
-        <line num="24" count="1" type="stmt"/>
-        <line num="30" count="3" type="stmt"/>
-        <line num="31" count="3" type="stmt"/>
-        <line num="32" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="33" count="1" type="stmt"/>
-        <line num="35" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="36" count="1" type="stmt"/>
-        <line num="42" count="3" type="stmt"/>
-        <line num="43" count="3" type="stmt"/>
-        <line num="44" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="45" count="1" type="stmt"/>
-        <line num="47" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="48" count="1" type="stmt"/>
-        <line num="54" count="2" type="stmt"/>
-        <line num="55" count="2" type="stmt"/>
-        <line num="57" count="1" type="stmt"/>
-      </file>
-    </package>
+<coverage generated="1721574915127" clover="3.2.0">
+  <project timestamp="1721574915127" name="All files">
+    <metrics statements="277" coveredstatements="189" conditionals="83" coveredconditionals="39" methods="43" coveredmethods="29" elements="403" coveredelements="257" complexity="0" loc="277" ncloc="277" packages="4" files="4" classes="4"/>
     <package name="auth.service">
       <metrics statements="26" coveredstatements="25" conditionals="8" coveredconditionals="5" methods="3" coveredmethods="3"/>
       <file name="auth.service.impl.ts" path="/Users/celesteoriana/Documents/twitter-backend/node/express-prisma-typescript/src/domains/auth/service/auth.service.impl.ts">
@@ -64,43 +32,6 @@
         <line num="57" count="2" type="cond" truecount="0" falsecount="1"/>
         <line num="58" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="59" count="1" type="stmt"/>
-      </file>
-    </package>
-    <package name="follow.service">
-      <metrics statements="31" coveredstatements="31" conditionals="7" coveredconditionals="6" methods="7" coveredmethods="7"/>
-      <file name="follow.service.impl.ts" path="/Users/celesteoriana/Documents/twitter-backend/node/express-prisma-typescript/src/domains/follow/service/follow.service.impl.ts">
-        <metrics statements="31" coveredstatements="31" conditionals="7" coveredconditionals="6" methods="7" coveredmethods="7"/>
-        <line num="2" count="5" type="stmt"/>
-        <line num="3" count="5" type="stmt"/>
-        <line num="4" count="5" type="stmt"/>
-        <line num="8" count="5" type="stmt"/>
-        <line num="9" count="1" type="cond" truecount="0" falsecount="1"/>
-        <line num="12" count="4" type="stmt"/>
-        <line num="13" count="4" type="stmt"/>
-        <line num="14" count="3" type="cond" truecount="1" falsecount="0"/>
-        <line num="15" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="17" count="1" type="stmt"/>
-        <line num="20" count="3" type="cond" truecount="1" falsecount="0"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="26" count="4" type="stmt"/>
-        <line num="27" count="4" type="stmt"/>
-        <line num="28" count="3" type="cond" truecount="1" falsecount="0"/>
-        <line num="29" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="33" count="3" type="cond" truecount="1" falsecount="0"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="39" count="2" type="stmt"/>
-        <line num="40" count="2" type="stmt"/>
-        <line num="42" count="1" type="stmt"/>
-        <line num="47" count="2" type="stmt"/>
-        <line num="48" count="2" type="stmt"/>
-        <line num="50" count="1" type="stmt"/>
-        <line num="55" count="2" type="stmt"/>
-        <line num="56" count="2" type="stmt"/>
-        <line num="58" count="1" type="stmt"/>
-        <line num="63" count="2" type="stmt"/>
-        <line num="64" count="2" type="stmt"/>
-        <line num="66" count="1" type="stmt"/>
       </file>
     </package>
     <package name="post.service">
@@ -262,41 +193,6 @@
         <line num="91" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="93" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="94" count="1" type="stmt"/>
-      </file>
-    </package>
-    <package name="reactionType.services">
-      <metrics statements="29" coveredstatements="29" conditionals="7" coveredconditionals="4" methods="6" coveredmethods="6"/>
-      <file name="reactionType.service.impl.ts" path="/Users/celesteoriana/Documents/twitter-backend/node/express-prisma-typescript/src/domains/reactionType/services/reactionType.service.impl.ts">
-        <metrics statements="29" coveredstatements="29" conditionals="7" coveredconditionals="4" methods="6" coveredmethods="6"/>
-        <line num="1" count="2" type="stmt"/>
-        <line num="2" count="2" type="stmt"/>
-        <line num="4" count="2" type="stmt"/>
-        <line num="8" count="2" type="stmt"/>
-        <line num="9" count="1" type="cond" truecount="0" falsecount="1"/>
-        <line num="12" count="2" type="stmt"/>
-        <line num="13" count="2" type="stmt"/>
-        <line num="15" count="1" type="stmt"/>
-        <line num="20" count="2" type="stmt"/>
-        <line num="21" count="2" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="28" count="3" type="stmt"/>
-        <line num="29" count="3" type="stmt"/>
-        <line num="30" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="33" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="39" count="3" type="stmt"/>
-        <line num="40" count="3" type="stmt"/>
-        <line num="41" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="42" count="1" type="stmt"/>
-        <line num="44" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="45" count="1" type="stmt"/>
-        <line num="50" count="2" type="stmt"/>
-        <line num="51" count="2" type="stmt"/>
-        <line num="52" count="1" type="cond" truecount="0" falsecount="1"/>
-        <line num="53" count="1" type="stmt"/>
-        <line num="55" count="1" type="cond" truecount="0" falsecount="1"/>
-        <line num="56" count="1" type="stmt"/>
       </file>
     </package>
     <package name="user.service">

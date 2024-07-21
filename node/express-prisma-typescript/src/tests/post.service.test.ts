@@ -1,16 +1,13 @@
 import { PostServiceImpl } from '@domains/post/service';
-import { PostRepository, PostRepositoryImpl } from '@domains/post/repository';
-import { UserService, UserServiceImpl } from '@domains/user/service';
-import { FollowService, FollowServiceImpl } from '@domains/follow/service';
+import { PostRepository } from '@domains/post/repository';
+import { UserService } from '@domains/user/service';
+import { FollowService } from '@domains/follow/service';
 import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '@domains/post/dto';
-import { ConflictException, InternalServerErrorException, NotFoundException, ForbiddenException } from '@utils/errors';
+import { InternalServerErrorException, NotFoundException, ForbiddenException } from '@utils/errors';
 import { jest } from '@jest/globals';
 import * as validator from 'class-validator';
-import { db } from '@utils/database';
 import { CursorPagination } from '@types';
-import { getPresignedGetURL, getPresignedPutUrl } from '@utils/aws.s3';
-import { v4 as uuidv4 } from 'uuid';
-import { UserDTO, UserViewDTO } from '@domains/user/dto';
+import { UserViewDTO } from '@domains/user/dto';
 
 // Mock repositories and services
 const mockPostRepository: jest.Mocked<PostRepository> = {
@@ -242,11 +239,11 @@ describe('PostServiceImpl', () => {
       const followedAuthorIds = ['followed-id1', 'followed-id2'];
       const publicAuthorIds = ['public-id1', 'public-id2'];
       const visibleAuthorIds = [...new Set([...followedAuthorIds, ...publicAuthorIds])];
-      const posts = [{ id: 'post-id1' } as ExtendedPostDTO];
+      const posts = [{ id: 'post-id1' }];
 
       mockFollowService.getFollowedUsersId.mockResolvedValue(followedAuthorIds);
       mockUserService.getPublicUsersIds.mockResolvedValue(publicAuthorIds);
-      mockPostRepository.getAllByDatePaginated.mockResolvedValue(posts);
+      mockPostRepository.getAllByDatePaginated.mockResolvedValue(posts as any);
 
       const result = await postService.getLatestPosts(userId, options);
 

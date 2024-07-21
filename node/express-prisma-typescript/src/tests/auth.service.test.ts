@@ -5,7 +5,6 @@ import * as utils from '@utils/auth';
 import { jest } from '@jest/globals';
 import { ExtendedUserDTO, UserDTO } from '@domains/user/dto';
 import { UserService } from '@domains/user/service';
-import { rejects } from 'assert';
 
 // Mockear dependencias
 const mockUserService: jest.Mocked<UserService> = {
@@ -41,13 +40,7 @@ describe('AuthServiceImpl', () => {
         password: 'password123',
       };
       const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), accTypeId: 'id'};
-      const extended_user: ExtendedUserDTO = { 
-        ...user,
-        email: 'test@example.com',
-        username: 'username', 
-        password: 'password'}
       const token = 'generated-token';
-      const username = 'username'
 
       mockUserService.getUserByEmailOrUsername.mockRejectedValue(new NotFoundException());
       mockUserService.createUser.mockResolvedValue(user);
@@ -72,13 +65,13 @@ describe('AuthServiceImpl', () => {
         password: 'password123',
       };
       const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), accTypeId: 'id'};
-      const extended_user: ExtendedUserDTO = { 
+      const extendedUser: ExtendedUserDTO = { 
         ...user,
         email: 'test@example.com',
         username: 'username', 
         password: 'password'}
 
-      mockUserService.getUserByEmailOrUsername.mockResolvedValue(extended_user);
+      mockUserService.getUserByEmailOrUsername.mockResolvedValue(extendedUser);
 
       // Act & Assert
       await expect(authService.signup(signupData)).rejects.toThrow(ConflictException);
@@ -95,7 +88,7 @@ describe('AuthServiceImpl', () => {
         password: 'password123',
       };
       const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), accTypeId: 'id'};
-      const extended_user: ExtendedUserDTO = { 
+      const extendedUser: ExtendedUserDTO = { 
         ...user,
         email: 'test@example.com',
         username: 'username', 
@@ -103,7 +96,7 @@ describe('AuthServiceImpl', () => {
       const token = 'generated-token';
 
 
-      mockUserService.getUserByEmailOrUsername.mockResolvedValue(extended_user);
+      mockUserService.getUserByEmailOrUsername.mockResolvedValue(extendedUser);
       jest.spyOn(utils, "checkPassword").mockResolvedValue(true);
       jest.spyOn(utils, "generateAccessToken").mockReturnValue(token);
 
@@ -113,7 +106,7 @@ describe('AuthServiceImpl', () => {
       // Assert
       expect(result).toEqual({ token });
       expect(mockUserService.getUserByEmailOrUsername).toHaveBeenCalledWith(loginData.email, loginData.username);
-      expect(utils.checkPassword).toHaveBeenCalledWith(loginData.password, extended_user.password);
+      expect(utils.checkPassword).toHaveBeenCalledWith(loginData.password, extendedUser.password);
     });
 
     it('should throw UnauthorizedException if credentials are invalid', async () => {
@@ -124,13 +117,13 @@ describe('AuthServiceImpl', () => {
         password: 'password123',
       };
       const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), accTypeId: 'id'};
-      const extended_user: ExtendedUserDTO = { 
+      const extendedUser: ExtendedUserDTO = { 
         ...user,
         email: 'test@example.com',
         username: 'username', 
         password: 'password'}
 
-      mockUserService.getUserByEmailOrUsername.mockResolvedValue(extended_user);
+      mockUserService.getUserByEmailOrUsername.mockResolvedValue(extendedUser);
       jest.spyOn(utils, "checkPassword").mockResolvedValue(false);
 
       // Act & Assert

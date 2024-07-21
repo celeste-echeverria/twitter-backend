@@ -1,5 +1,5 @@
 import { ReactionTypeServiceImpl } from '@domains/reactionType/services';
-import { ReactionTypeRepository, ReactionTypeRepositoryImpl } from '@domains/reactionType/repository';
+import { ReactionTypeRepository } from '@domains/reactionType/repository';
 import { InternalServerErrorException, NotFoundException } from '@utils/errors';
 import { ReactionTypeDTO } from '@domains/reactionType/dto';
 import { jest } from '@jest/globals';
@@ -23,7 +23,7 @@ describe('ReactionTypeServiceImpl', () => {
     describe('createReactionType', () => {
         it('should create a reaction type successfully', async () => {
             const reactionTypeName = 'Like';
-            const reactionTypeDTO = { id: 'reaction-type-id', typeName: reactionTypeName } as ReactionTypeDTO;
+            const reactionTypeDTO = { id: 'reaction-type-id', typeName: reactionTypeName };
 
             mockRepository.create.mockResolvedValue(reactionTypeDTO);
 
@@ -67,7 +67,7 @@ describe('ReactionTypeServiceImpl', () => {
     describe('getReactionTypeById', () => {
         it('should return a reaction type by id successfully', async () => {
             const reactionTypeId = 'reaction-type-id';
-            const reactionTypeDTO = { id: reactionTypeId, typeName: 'Like' } as ReactionTypeDTO;
+            const reactionTypeDTO = { id: reactionTypeId, typeName: 'Like' };
 
             mockRepository.getById.mockResolvedValue(reactionTypeDTO);
 
@@ -99,7 +99,7 @@ describe('ReactionTypeServiceImpl', () => {
     describe('getReactionByTypeName', () => {
         it('should return a reaction type by type name successfully', async () => {
             const typeName = 'Like';
-            const reactionTypeDTO = { id: 'reaction-type-id', typeName } as ReactionTypeDTO;
+            const reactionTypeDTO = { id: 'reaction-type-id', typeName };
 
             mockRepository.getByTypeName.mockResolvedValue(reactionTypeDTO);
 

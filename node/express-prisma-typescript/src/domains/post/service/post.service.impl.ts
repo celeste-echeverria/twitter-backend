@@ -31,7 +31,7 @@ export class PostServiceImpl implements PostService {
     try {
       await validate(content)
       const post = await this.getPost(userId, postId)
-      if(!post) throw new NotFoundException('Post')
+      if(post === null) throw new NotFoundException('Post')
       const author = await this.userService.getUser(userId)
       if(!author) throw new NotFoundException('User')
 

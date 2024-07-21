@@ -100,7 +100,7 @@ export class UserServiceImpl implements UserService {
       const user = await this.getUser(userId)
       if (!user) throw new NotFoundException('User')
       const accType = await this.accTypeService.getAccTypeByTypeName('Public')
-      if (accType === null) throw new NotFoundException('Account Type')
+      if (!accType) throw new NotFoundException('Account Type')
       return user.accTypeId === accType.id
     } catch (error) {
       if (error instanceof NotFoundException) throw error

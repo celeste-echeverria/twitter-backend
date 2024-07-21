@@ -1,7 +1,7 @@
 import { ReactionServiceImpl } from '@domains/reaction/services';
-import { ReactionRepository, ReactionRepositoryImpl } from '@domains/reaction/repository';
-import { PostService, PostServiceImpl } from '@domains/post/service';
-import { ReactionTypeService, ReactionTypeServiceImpl } from '@domains/reactionType/services';
+import { ReactionRepository } from '@domains/reaction/repository';
+import { PostService } from '@domains/post/service';
+import { ReactionTypeService } from '@domains/reactionType/services';
 import { ReactionDTO } from '@domains/reaction/dto';
 import { BadRequestException, ForbiddenException, InternalServerErrorException, NotFoundException } from '@utils/errors';
 import { jest } from '@jest/globals';

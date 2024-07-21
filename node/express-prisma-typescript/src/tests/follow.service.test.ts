@@ -1,10 +1,9 @@
 import { FollowServiceImpl } from '@domains/follow/service';
-import { FollowRepository, FollowRepositoryImpl } from '@domains/follow/repository';
+import { FollowRepository } from '@domains/follow/repository';
 import { ConflictException, InternalServerErrorException } from '@utils/errors';
 import { FollowDTO } from '@domains/follow/dto';
 import { UserDTO } from '@domains/user/dto';
 import { jest } from '@jest/globals';
-import { mockDeep } from 'jest-mock-extended';
 
 // Mock de FollowRepository
 

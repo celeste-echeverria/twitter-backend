@@ -1,12 +1,11 @@
 import { UserServiceImpl } from '@domains/user/service';
-import { UserRepository, UserRepositoryImpl } from '@domains/user/repository';
-import { AccTypeService, AccTypeServiceImpl } from '@domains/accountType/services';
-import { FollowService, FollowServiceImpl } from '@domains/follow/service';
+import { UserRepository } from '@domains/user/repository';
+import { AccTypeService } from '@domains/accountType/services';
+import { FollowService } from '@domains/follow/service';
 import { InternalServerErrorException, NotFoundException } from '@utils/errors';
-import { UserDTO, ExtendedUserDTO, UserViewDTO } from '@domains/user/dto';
+import { UserDTO, ExtendedUserDTO } from '@domains/user/dto';
 import { SignupInputDTO } from '@domains/auth/dto'
 import { mockDeep } from 'jest-mock-extended';
-import * as AWSutils from '@utils/aws.s3';
 import { OffsetPagination } from 'types';
 
 // Mocks
@@ -271,7 +270,7 @@ describe('UserServiceImpl', () => {
       const accTypeName = 'Public';
 
       mockAccTypeService.getAccTypeById.mockResolvedValue({ id: accTypeId, typeName: accTypeName });
-      mockUserRepository.setAccountType.mockResolvedValue({ id: userId, accTypeId, accTypeName } as UserDTO);
+      mockUserRepository.setAccountType.mockResolvedValue({ id: userId, accTypeId, accTypeName } as any);
 
       const result = await userService.setUserAccountType(userId, accTypeId);
 

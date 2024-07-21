@@ -28,7 +28,7 @@ export class ReactionServiceImpl implements ReactionService {
             const reaction = await this.reactionRepository.getUserReactionFromPost(userId, postId, reactionType.id)
             if (reaction) throw new BadRequestException("Reaction")
             if (reactionTypeName === "Retweet") await this.postService.incrementPostRetweetsCount(postId)
-            if (reactionTypeName == "Like") await this.postService.incrementPostLikesCount(postId)
+            if (reactionTypeName === "Like") await this.postService.incrementPostLikesCount(postId)
             
             return await this.reactionRepository.create(reactionType.id, userId, postId)
 

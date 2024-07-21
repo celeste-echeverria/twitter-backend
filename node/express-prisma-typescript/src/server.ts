@@ -38,11 +38,11 @@ app.use(ErrorHandling)
 setupSwagger(app);
 
 const httpServer = createServer(app);
-const io = new SocketIOServer(httpServer, {
+/*const io = new SocketIOServer(httpServer, {
   cors: {
     origin: '*',
   },
-})
+})*/
 //setupSocket(io)
 
 httpServer.listen(Constants.PORT, () => {
