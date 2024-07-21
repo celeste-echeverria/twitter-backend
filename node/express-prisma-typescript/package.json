@@ -12,7 +12,7 @@
     "db:make-migrations": "prisma migrate dev",
     "db:generate": "prisma generate",
     "studio": "prisma studio",
-    "test": "jest --watch"
+    "test": "jest"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
