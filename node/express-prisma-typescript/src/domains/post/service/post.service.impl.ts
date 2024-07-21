@@ -31,11 +31,10 @@ export class PostServiceImpl implements PostService {
     try {
       await validate(content)
       const post = await this.getPost(userId, postId)
-      if(post === null) throw new NotFoundException('Post')
       const author = await this.userService.getUser(userId)
       if(!author) throw new NotFoundException('User')
 
-      return await this.postRepository.create(userId, content, postId)
+      return await this.postRepository.create(userId, content, post?.id)
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("createComment")

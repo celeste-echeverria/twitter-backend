@@ -7,7 +7,7 @@ import { Constants, NodeEnv, Logger } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
 import { setupSwagger } from '@utils/swagger'
-import { Server as SocketIOServer } from 'socket.io'
+//import { Server as SocketIOServer } from 'socket.io'
 import { createServer } from 'http'
 //import setupSocket from '@utils/socket'; // Importa la configuración de Socket.IO
 
