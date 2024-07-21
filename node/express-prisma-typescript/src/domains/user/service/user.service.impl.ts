@@ -1,5 +1,5 @@
 import { InternalServerErrorException, NotFoundException } from '@utils/errors'
-import { CursorPagination, OffsetPagination } from 'types'
+import { OffsetPagination } from 'types'
 import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
 import { UserRepository, UserRepositoryImpl } from '../repository'
 
@@ -21,8 +21,8 @@ export class UserServiceImpl implements UserService {
   async createUser (data: SignupInputDTO): Promise<UserDTO> {
     try {
       //get Public account type
-      const accType = await this.accTypeService.getAccTypeByTypeName(data.accTypeName || "Public")
-      if(!accType) throw new NotFoundException('Account Type')
+      const accType = await this.accTypeService.getAccTypeByTypeName(data.accTypeName ?? "Public")
+      if(accType === null) throw new NotFoundException('Account Type')
 
       const userData = {
         ...data,
@@ -53,7 +53,7 @@ export class UserServiceImpl implements UserService {
       const user = await this.userRepository.getById(userId)
       if (!user) throw new NotFoundException('User')
       const accType = await this.accTypeService.getAccTypeById(user.accTypeId)
-      if (!accType) throw new NotFoundException('Account Type')
+      if (accType === null) throw new NotFoundException('Account Type')
 
       return ({...user, accTypeName: accType.typeName})
     } catch (error) {
@@ -100,7 +100,7 @@ export class UserServiceImpl implements UserService {
       const user = await this.getUser(userId)
       if (!user) throw new NotFoundException('User')
       const accType = await this.accTypeService.getAccTypeByTypeName('Public')
-      if (!accType) throw new NotFoundException('Account Type')
+      if (accType === null) throw new NotFoundException('Account Type')
       return user.accTypeId === accType.id
     } catch (error) {
       if (error instanceof NotFoundException) throw error
@@ -122,7 +122,7 @@ export class UserServiceImpl implements UserService {
   async getPublicUsersIds (): Promise <string[]> {
     try {
       const accType = await this.accTypeService.getAccTypeByTypeName('Public')
-      if (!accType) throw new NotFoundException('Account Type')
+      if (accType === null) throw new NotFoundException('Account Type')
       return await this.userRepository.getUsersIdsByAccType(accType.id)
     } catch (error) {
       if (error instanceof NotFoundException) throw error

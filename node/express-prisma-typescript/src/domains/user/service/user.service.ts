@@ -1,7 +1,6 @@
-import { CursorPagination, OffsetPagination } from '@types'
+import { OffsetPagination } from '@types'
 import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
 import { SignupInputDTO } from '@domains/auth/dto'
-import { User } from '@prisma/client'
 
 export interface UserService {
   createUser: (data: SignupInputDTO) => Promise<UserDTO>

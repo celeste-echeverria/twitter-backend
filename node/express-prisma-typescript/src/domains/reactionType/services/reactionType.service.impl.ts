@@ -49,7 +49,7 @@ export class ReactionTypeServiceImpl implements ReactionTypeService {
     async getReactionTypes () : Promise<ReactionTypeDTO[]> {
         try {
             const reactionTypes =  await this.reactionTypeRepository.getReactionTypes()
-            if (!reactionTypes) throw new NotFoundException("Reaction Types")
+            if (!reactionTypes.length) throw new NotFoundException("Reaction Types")
             return reactionTypes
         } catch (error) {
             if (error instanceof NotFoundException) throw error
