@@ -15,17 +15,19 @@ jobs:
         with:
           node-version: '20.14.0'
       
-      - name: Navigate to project directory
-        run: cd node/express-prisma-typescript
-
       - name: Install dependencies
         run: yarn install
+        working-directory: node/express-prisma-typescript
           
       - name: Install dependencies
         run: yarn install 
+        working-directory: node/express-prisma-typescript
 
       - name: Run ESLint
         run: yarn eslint . --ext .ts,.tsx 
+        working-directory: node/express-prisma-typescript
 
       - name: Run jscpd
         run: yarn jscpd --config .jscpd.yml --ignore "node_modules/**,dist/**,build/**,public/**,coverage/**,logs/**"
+        working-directory: node/express-prisma-typescript
+
