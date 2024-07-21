@@ -7,16 +7,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.6.0 
+        with:
+          node-version: '20.14.0'
+          
+      - name: Install dependencies
+        run: yarn install 
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '20.14.0' 
+      - name: Run ESLint
+        run: yarn eslint . --ext .ts,.tsx 
 
-    - name: Install dependencies
-      run: yarn install 
-
-    - name: Run ESLint
-      run: yarn eslint . --ext .ts,.tsx 
+      - name: Run jscpd
+        run: yarn jscpd --config .jscpd.yml --ignore "node_modules/**,dist/**,build/**,public/**,coverage/**,logs/**"
