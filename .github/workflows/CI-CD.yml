@@ -23,3 +23,19 @@ jobs:
       run: yarn test
       working-directory: node/express-prisma-typescript
 
+    - name: Deploy to Railway
+      env:
+        RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+      run: |
+        curl -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $RAILWAY_API_TOKEN" \
+        -d '{
+              "name": "Deploy from GitHub Actions",
+              "branch": "main",
+              "serviceId": "$PROJECT_ID"
+            }' \
+        https://backboard.railway.app/graphql
+
+
