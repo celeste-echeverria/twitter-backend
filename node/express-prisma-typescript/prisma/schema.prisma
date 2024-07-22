@@ -40,6 +40,17 @@ model User {
 
   rooms Room[] @relation("UserRooms")
   UserRoom UserRoom[]
+  messagesSent Message[]
+}
+
+model Message {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  senderId String   @db.Uuid // Foreign Key
+  sender User @relation(fields: [senderId], references: [id])
+  createdAt DateTime
+  content String
+  roomId String @db.Uuid // Foreign Key
+  room Room @relation(fields: [roomId], references: [id])
 }
 
 model Room {
@@ -47,6 +58,7 @@ model Room {
 
   users    User[]     @relation("UserRooms")
   UserRoom UserRoom[]
+  messages Message[]
 }
 
 model UserRoom {

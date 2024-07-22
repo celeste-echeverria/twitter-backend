@@ -1,5 +1,5 @@
 import { ChatRepository } from './chat.repository';
-import { RoomDTO } from '../dto';
+import { MessageDTO, RoomDTO } from '../dto';
 import { UserDTO } from '@domains/user/dto';
 import { PrismaClient } from '@prisma/client';
 
@@ -77,4 +77,23 @@ export class ChatRepositoryImpl implements ChatRepository {
         })
     }
 
+    async saveMessage (senderId: string, content: string, roomId: string): Promise<MessageDTO> {
+        const message = await this.db.message.create({
+            data: {
+                roomId,
+                content,
+                senderId
+            }
+        })
+        return new MessageDTO(message)
+    }
+
+    async getMessagesFromRoom (roomId: string): Promise <MessageDTO[]> {
+        const messages = await this.db.message.findMany({
+            where:{
+                roomId
+            }
+        })
+        return messages.map(msg => new MessageDTO(msg))
+    }
 }

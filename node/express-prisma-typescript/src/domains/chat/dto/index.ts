@@ -8,3 +8,22 @@ export class RoomDTO {
     id: string
     users: UserDTO[]
 }
+
+export class MessageDTO {
+    constructor(message: MessageDTO){
+        this.content = message.content
+        this.senderId = message.senderId
+    }
+
+    content: string
+    senderId: string
+}
+
+export class ExtendedMessageDTO extends MessageDTO {
+    constructor(message: ExtendedMessageDTO){
+        super(message)
+        this.sender = message.sender
+    }
+    sender: UserDTO
+
+}

@@ -1,6 +1,6 @@
 // src/services/ChatServiceImpl.ts
 import { ChatRepository, ChatRepositoryImpl } from '../repository';
-import { RoomDTO } from '../dto';
+import { MessageDTO, RoomDTO } from '../dto';
 import { ChatService } from './chat.service';
 import { db, InternalServerErrorException, NotFoundException } from '@utils';
 import { FollowService, FollowServiceImpl } from '@domains/follow/service';
@@ -56,6 +56,27 @@ export class ChatServiceImpl implements ChatService {
             return room.id
         } catch (error) {
             throw new InternalServerErrorException("getOrCreateRoom")
+        }
+    }
+
+    async saveMessage(senderId: string, content: string, roomId: string): Promise<MessageDTO> {
+        try {
+            const room = this.chatRepository.getRoomById(roomId)
+            if (!room) throw new NotFoundException("Room")
+            const message = await this.chatRepository.saveMessage(senderId, content, roomId)
+            return message
+        } catch (error) {
+            if (error instanceof NotFoundException) throw error
+            throw new InternalServerErrorException("saveMessage")
+        }
+    }
+
+    async getRoomMessages(roomId: string): Promise <MessageDTO[]> {
+        try {
+            const messages = await this.chatRepository.getMessagesFromRoom(roomId)
+            return messages ?? []
+        } catch (error) {
+            throw new InternalServerErrorException("getRoomMessages")
         }
     }
 }

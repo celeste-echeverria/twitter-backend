@@ -14,7 +14,6 @@ export const handleConnection = async (socket: any): Promise<void> => {
 
   socket.on('join_room', async (targetUserId: string) => {
     const isMutual = availableUsers.some(user => user.id === targetUserId);
-    console.log('target:', targetUserId)
     if (isMutual) {
       const roomId = await chatService.getOrCreateRoom(userId, targetUserId);
       socket.join(roomId);
@@ -28,6 +27,7 @@ export const handleConnection = async (socket: any): Promise<void> => {
   socket.on('chat_message', (data: { roomId: string; message: string }) => {
     const { roomId, message } = data;
     console.log(`Emitting message to room ${roomId}: ${message}`);
+    chatService.saveMessage(userId, message, roomId)
     socket.to(roomId).emit('chat_message', { sender: userId, message });
   });
   
