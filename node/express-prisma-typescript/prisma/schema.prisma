@@ -38,37 +38,20 @@ model User {
 
   reactions Reaction[]
 
-  rooms Room[] @relation("UserRooms")
-  UserRoom UserRoom[]
-  messagesSent Message[]
+  messagesSent Message[] @relation(name: "sender")
+  messagesReceived Message [] @relation(name: "recipient")
 }
 
 model Message {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  senderId String   @db.Uuid // Foreign Key
-  sender User @relation(fields: [senderId], references: [id])
-  createdAt DateTime
+  createdAt DateTime @default(now())
   content String
-  roomId String @db.Uuid // Foreign Key
-  room Room @relation(fields: [roomId], references: [id])
-}
-
-model Room {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-
-  users    User[]     @relation("UserRooms")
-  UserRoom UserRoom[]
-  messages Message[]
-}
-
-model UserRoom {
-  userId String @db.Uuid
-  roomId String @db.Uuid
-
-  user User @relation(fields: [userId], references: [id])
-  room Room @relation(fields: [roomId], references: [id])
-
-  @@id([userId, roomId])
+  
+  senderId String   @db.Uuid // Foreign Key
+  sender User @relation(name: "sender", fields: [senderId], references: [id])
+  
+  recipientId String   @db.Uuid // Foreign Key
+  recipient User @relation(name: "recipient", fields: [recipientId], references: [id])
 }
 
 model AccountType {

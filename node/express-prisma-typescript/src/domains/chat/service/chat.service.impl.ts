@@ -12,58 +12,9 @@ export class ChatServiceImpl implements ChatService {
         private readonly followService: FollowService = new FollowServiceImpl()
     ) {} 
 
-    async createRoom(userId: string, otherUserId: string): Promise<RoomDTO> {
+    async saveMessage(senderId: string, toUserId: string, content: string): Promise<MessageDTO> {
         try {
-            return await this.chatRepository.createRoom(userId, otherUserId)
-        } catch (error) {
-            throw new InternalServerErrorException("createRoom")
-        }
-    }
-
-    async getRoom(roomId: string): Promise<RoomDTO | null> {
-        try {
-            const room = await this.chatRepository.getRoomById(roomId)
-            if(!room) throw new NotFoundException("Room")
-            return room
-        } catch (error) {
-            if (error instanceof NotFoundException) throw error
-            throw new InternalServerErrorException("getRoom")
-        }
-    }
-
-    async getAllRooms(): Promise<RoomDTO[]> {
-        try {
-            const rooms = await this.chatRepository.getAllRooms();
-            return rooms ?? []
-        } catch (error) {
-            throw new InternalServerErrorException("getAllRooms")
-        }
-    }
-
-    async deleteRoom(roomId: string): Promise<void> {
-        try {
-            return await this.chatRepository.deleteRoom(roomId);
-        } catch (error) {
-            throw new InternalServerErrorException("deleteRoom")
-        }
-    }
-
-    async getOrCreateRoom (userId: string, targetUserId: string): Promise<string> {
-        try {
-            const existentRoom = await this.chatRepository.getRoomByUsersIds(userId, targetUserId)
-            if (existentRoom) return existentRoom.id
-            const room = await this.chatRepository.createRoom(userId, targetUserId)
-            return room.id
-        } catch (error) {
-            throw new InternalServerErrorException("getOrCreateRoom")
-        }
-    }
-
-    async saveMessage(senderId: string, content: string, roomId: string): Promise<MessageDTO> {
-        try {
-            const room = this.chatRepository.getRoomById(roomId)
-            if (!room) throw new NotFoundException("Room")
-            const message = await this.chatRepository.saveMessage(senderId, content, roomId)
+            const message = await this.chatRepository.saveMessage(senderId, toUserId, content)
             return message
         } catch (error) {
             if (error instanceof NotFoundException) throw error
@@ -71,12 +22,27 @@ export class ChatServiceImpl implements ChatService {
         }
     }
 
-    async getRoomMessages(roomId: string): Promise <MessageDTO[]> {
+    async getOldMessagesFromChat(userId: string): Promise<Map<string, MessageDTO[]> | undefined> {
         try {
-            const messages = await this.chatRepository.getMessagesFromRoom(roomId)
-            return messages ?? []
+            const oldMessages = await this.chatRepository.getMessagesFromChat(userId)
+            if (oldMessages) {
+                const userMessages = new Map<string, MessageDTO[]>()
+                oldMessages.map((message) => {
+                    const key = (message.senderId === userId) ? message.recipientId : message.senderId
+                    if(userMessages.has(key)) {
+                        userMessages.get(key)?.push(message)
+                    } else {
+                        userMessages.set(key, [message])
+                    }
+                })
+                console.log(oldMessages)
+                return userMessages
+            }
         } catch (error) {
-            throw new InternalServerErrorException("getRoomMessages")
+            console.log(error)
+            throw new InternalServerErrorException("getOldMessagesFromChat")
         }
+        
     }
+
 }

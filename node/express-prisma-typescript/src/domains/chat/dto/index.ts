@@ -1,4 +1,5 @@
 import { UserDTO } from "@domains/user/dto"
+import { IsNotEmpty, IsString } from "class-validator"
 
 export class RoomDTO {
     constructor(room: RoomDTO){
@@ -13,10 +14,12 @@ export class MessageDTO {
     constructor(message: MessageDTO){
         this.content = message.content
         this.senderId = message.senderId
+        this.recipientId = message.recipientId
     }
 
     content: string
     senderId: string
+    recipientId: string
 }
 
 export class ExtendedMessageDTO extends MessageDTO {
@@ -26,4 +29,17 @@ export class ExtendedMessageDTO extends MessageDTO {
     }
     sender: UserDTO
 
+}
+
+export class MessageInputDTO {
+    constructor(toUserId: string, message: string) {
+        this.toUserId = toUserId,
+        this.message = message
+    }
+    @IsNotEmpty()
+    @IsString()
+    toUserId: string
+
+    @IsString()
+    message: string
 }

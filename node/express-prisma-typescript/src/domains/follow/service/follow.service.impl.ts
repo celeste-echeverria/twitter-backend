@@ -1,6 +1,6 @@
 import { FollowService } from "./follow.service";
 import { FollowRepository, FollowRepositoryImpl } from "../repository";
-import { ConflictException, InternalServerErrorException } from "@utils/errors";
+import { ConflictException, InternalServerErrorException, NotFoundException } from "@utils/errors";
 import {db} from '@utils/database'
 import { FollowDTO } from "../dto";
 import { UserDTO } from "@domains/user/dto";
@@ -84,6 +84,14 @@ export class FollowServiceImpl implements FollowService {
             return mutuals
         } catch (error) {
             throw new InternalServerErrorException("getMutuals")
+        }
+    }
+
+    async usersAreMutuals(userId: string, otherUserId: string): Promise <boolean> {
+        try {
+            return await this.repository.areMutualFollowers(userId, otherUserId)
+        } catch (error) {
+            throw new InternalServerErrorException("usersAreMutuals")
         }
     }
 }

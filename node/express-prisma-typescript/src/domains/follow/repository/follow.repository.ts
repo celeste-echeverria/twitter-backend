@@ -10,4 +10,5 @@ export interface FollowRepository {
     isFollowing: (followerId: string, followedId: string) => Promise<boolean>
     getFollowByUsersId: (followerId: string, followedId: string) => Promise<FollowDTO | null>
     getMutualFollowersByUserId: (userId: string) => Promise <UserDTO[]>
+    areMutualFollowers: (userId: string, otherUserId: string) => Promise <boolean>
 } 

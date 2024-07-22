@@ -99,4 +99,26 @@ export class FollowRepositoryImpl implements FollowRepository{
         return mutuals.map(mutual => new UserDTO(mutual))
     }
     
+    async areMutualFollowers(userId: string, otherUserId: string): Promise <boolean>{
+        const follow1 = await this.db.follow.findUnique({
+            where: {
+              followerId_followedId: {
+                followerId: userId,
+                followedId: otherUserId,
+              },
+            },
+          });
+      
+          const follow2 = await this.db.follow.findUnique({
+            where: {
+              followerId_followedId: {
+                followerId: otherUserId,
+                followedId: userId,
+              },
+            },
+          });
+      
+          return follow1 !== null && follow2 !== null;
+    }
+
 }

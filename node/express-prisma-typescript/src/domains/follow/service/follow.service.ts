@@ -10,4 +10,5 @@ export interface FollowService {
     getFollowingByUserId: (userId: string) => Promise <UserDTO[]>
     getMutualsIds: (userId: string) => Promise <string[]>
     getMutuals: (userId: string) => Promise <UserDTO[]>
+    usersAreMutuals: (userId: string, otherUserId: string) => Promise <boolean>
 }

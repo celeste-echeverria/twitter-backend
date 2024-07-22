@@ -1,37 +1,41 @@
+import { validate } from 'class-validator'
 import { ChatService, ChatServiceImpl } from './service'
 import { FollowService, FollowServiceImpl } from '@domains/follow/service'
 
 const chatService: ChatService = new ChatServiceImpl()
 const followService: FollowService = new FollowServiceImpl()
+const users = new Map<string, string>()
 
 export const handleConnection = async (socket: any): Promise<void> => {
-  console.log('a user connected')
-
+  console.log('a user connected:', socket.user.userId)
   const userId: string = socket.user.userId
+  console.log(userId)
   const availableUsers = await followService.getMutuals(userId)
-  console.log('Available chats:', availableUsers.map(user => {return user.name}))
-  socket.emit('available_chats', availableUsers);
+  
+  //test:
+  console.log('Available chats:', availableUsers.map(user => {return [user.id, user.name]}))
 
-  socket.on('join_room', async (targetUserId: string) => {
-    const isMutual = availableUsers.some(user => user.id === targetUserId);
-    if (isMutual) {
-      const roomId = await chatService.getOrCreateRoom(userId, targetUserId);
-      socket.join(roomId);
-      socket.emit('joined_room', roomId);
-      console.log(`User ${userId} joined room ${roomId}`);
+  users.set(userId, socket.id);
+
+  socket.on('chat', async (data: any) => {
+    console.log(data)
+    console.log(data.message)
+    const mutuals = await followService.usersAreMutuals(userId, data.toUserId)
+    if (mutuals) {
+      if (users.get(data.toUserId)) {
+        await chatService.saveMessage(userId, data.toUserId, data.message);
+        socket.to(users.get(data.toUserId)).emit('chat', { from: userId, content: data.message });
+      } else {
+        await chatService.saveMessage(userId, data.toUserId, data.message,);
+        socket.to(socket.id).emit('chat', { content: `${data.toUserId} is not online.` });
+      }
     } else {
-      socket.emit('You cannot join this room');
+      socket.to(socket.id).emit('chat', { content: 'You do not follow each other.' });
     }
-  });
-
-  socket.on('chat_message', (data: { roomId: string; message: string }) => {
-    const { roomId, message } = data;
-    console.log(`Emitting message to room ${roomId}: ${message}`);
-    chatService.saveMessage(userId, message, roomId)
-    socket.to(roomId).emit('chat_message', { sender: userId, message });
   });
   
   socket.on('disconnect', () => {
-    console.log('user disconnected')
+    console.log(`${userId} disconnected.`)
+    users.delete(userId)
   })
 }
