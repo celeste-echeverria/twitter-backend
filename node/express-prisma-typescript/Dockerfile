@@ -16,6 +16,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+EXPOSE 8080
+
 RUN yarn db:generate
 RUN yarn build
 
@@ -43,4 +45,5 @@ COPY nodemon.json ./nodemon.json
 COPY tsconfig.json ./tsconfig.json
 COPY . .
 
+EXPOSE 8080
 CMD yarn dev

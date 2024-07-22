@@ -114,7 +114,7 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /posts:
+ * /post:
  *   post:
  *     summary: Create a new post
  *     tags: [Post]
