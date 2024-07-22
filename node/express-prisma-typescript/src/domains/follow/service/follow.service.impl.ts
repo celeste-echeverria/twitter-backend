@@ -66,4 +66,24 @@ export class FollowServiceImpl implements FollowService {
             throw new InternalServerErrorException("getFollowingByUserId")
         }
     }
+
+    async getMutualsIds(userId: string): Promise <string[]> {
+        try {
+            const mutuals = await this.repository.getMutualFollowersByUserId(userId)
+            const mutualsIds = mutuals.map(mutual => mutual.id) ?? []
+            return mutualsIds
+        } catch (error) {
+            throw new InternalServerErrorException("getMutuals")
+        }
+    }
+
+    async getMutuals(userId: string): Promise <UserDTO[]> {
+        try {
+            const mutuals = await this.repository.getMutualFollowersByUserId(userId)
+            console.log('mutuals for ', userId, 'are', mutuals)
+            return mutuals
+        } catch (error) {
+            throw new InternalServerErrorException("getMutuals")
+        }
+    }
 }

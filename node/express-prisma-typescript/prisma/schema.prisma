@@ -19,31 +19,49 @@ datasource db {
 model User {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
 
-  username String  @unique // Unique constraint
-  name     String? @db.VarChar(35) // Limit display name to 35 characters
-  email    String  @unique // Unique constraint
-  password String
+  username       String  @unique // Unique constraint
+  name           String? @db.VarChar(35) // Limit display name to 35 characters
+  email          String  @unique // Unique constraint
+  password       String
   profilePicture String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
-  accTypeId String    @db.Uuid // Foreign Key
+  accTypeId String      @db.Uuid // Foreign Key
   accType   AccountType @relation(fields: [accTypeId], references: [id])
-  
+
   posts     Post[]
-  follows   Follow[]      @relation(name: "follows")
-  followers Follow[]      @relation(name: "followers")
+  follows   Follow[] @relation(name: "follows")
+  followers Follow[] @relation(name: "followers")
 
   reactions Reaction[]
 
+  rooms Room[] @relation("UserRooms")
+  UserRoom UserRoom[]
 }
 
+model Room {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+  users    User[]     @relation("UserRooms")
+  UserRoom UserRoom[]
+}
+
+model UserRoom {
+  userId String @db.Uuid
+  roomId String @db.Uuid
+
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+
+  @@id([userId, roomId])
+}
 
 model AccountType {
-  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key 
-  typeName String  @unique
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key 
+  typeName String @unique
   users    User[]
 }
 
@@ -61,7 +79,6 @@ model Follow {
   followed User @relation(name: "followers", fields: [followedId], references: [id], onDelete: Cascade) // One to many
 
   @@unique([followerId, followedId]) // Unique constraint on the combination of followerId and followedId
-
 }
 
 model Post {
@@ -75,38 +92,38 @@ model Post {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
-  repliesToPostId String?  @db.Uuid
-  repliesToPost  Post?     @relation(name: "RepliesTo", fields: [repliesToPostId], references: [id])
-  replies   Post[]    @relation(name: "RepliesTo")
+  repliesToPostId String? @db.Uuid
+  repliesToPost   Post?   @relation(name: "RepliesTo", fields: [repliesToPostId], references: [id])
+  replies         Post[]  @relation(name: "RepliesTo")
 
-  author    User  @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
 
-  reactions Reaction[]
-  qtyTotalReactions Int @default(0)
-  qtyLikes Int @default(0)
-  qtyRetweets Int @default(0)
-  qtyComments Int @default(0)
+  reactions         Reaction[]
+  qtyTotalReactions Int        @default(0)
+  qtyLikes          Int        @default(0)
+  qtyRetweets       Int        @default(0)
+  qtyComments       Int        @default(0)
 }
 
 model ReactionType {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  typeName String @unique
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  typeName  String     @unique
   reactions Reaction[]
 }
 
 model Reaction {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional 
-  
-  userId      String   @db.Uuid // Foreign Key
-  postId      String   @db.Uuid // Foreign Key
+
+  userId         String @db.Uuid // Foreign Key
+  postId         String @db.Uuid // Foreign Key
   reactionTypeId String @db.Uuid // Foreign Key
 
-  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade) // Many to one
-  post  Post         @relation(fields: [postId], references: [id], onDelete: Cascade) // Many to one
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade) // Many to one
+  post         Post         @relation(fields: [postId], references: [id], onDelete: Cascade) // Many to one
   reactionType ReactionType @relation(fields: [reactionTypeId], references: [id], onDelete: Cascade) // Many to one
 
   @@unique([userId, postId, reactionTypeId]) // Unique constraint on the combination of userId, postId, and reactionTypeId

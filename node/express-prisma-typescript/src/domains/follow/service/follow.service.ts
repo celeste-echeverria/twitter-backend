@@ -8,4 +8,6 @@ export interface FollowService {
     getFollowedUsersId: (followerId: string) => Promise <string[]>
     getFollowersByUserId: (userId: string) => Promise <UserDTO[]>
     getFollowingByUserId: (userId: string) => Promise <UserDTO[]>
+    getMutualsIds: (userId: string) => Promise <string[]>
+    getMutuals: (userId: string) => Promise <UserDTO[]>
 }

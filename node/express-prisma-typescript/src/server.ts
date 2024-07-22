@@ -7,9 +7,10 @@ import { Constants, NodeEnv, Logger } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
 import { setupSwagger } from '@utils/swagger'
-//import { Server as SocketIOServer } from 'socket.io'
 import { createServer } from 'http'
-//import setupSocket from '@utils/socket'; // Importa la configuración de Socket.IO
+import { Server } from 'socket.io'
+import { handleConnection } from '@domains/chat/chat.server'
+import { chatAuth } from '@domains/chat/middleware/chat.middleware'
 
 
 const app = express()
@@ -35,15 +36,18 @@ app.use('/api', router)
 
 app.use(ErrorHandling)
 
-setupSwagger(app);
+setupSwagger(app)
 
-const httpServer = createServer(app);
-/*const io = new SocketIOServer(httpServer, {
+export const httpServer = createServer(app)
+
+export const io = new Server(httpServer, {
   cors: {
-    origin: '*',
-  },
-})*/
-//setupSocket(io)
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+})
+
+io.use(chatAuth).on('connection', handleConnection)
 
 httpServer.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`);

@@ -75,5 +75,28 @@ export class FollowRepositoryImpl implements FollowRepository{
         return (follow != null) ? new FollowDTO(follow) : null
     }
 
+    async getMutualFollowersByUserId(userId: string): Promise <UserDTO[]> {
+        const mutuals = await this.db.user.findMany({
+            where: {
+              AND: [
+                {
+                  follows: {
+                    some: {
+                      followedId: userId,
+                    },
+                  },
+                },
+                {
+                  followers: {
+                    some: {
+                      followerId: userId,
+                    },
+                  },
+                },
+              ],
+            },
+        });
+        return mutuals.map(mutual => new UserDTO(mutual))
+    }
     
 }
