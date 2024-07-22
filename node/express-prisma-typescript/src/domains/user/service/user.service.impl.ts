@@ -164,8 +164,7 @@ export class UserServiceImpl implements UserService {
       if (await this.followService.userIsFollowing(userId, otherUserId)) {
         following = `${user.username} is following you.`
       } else {
-        if (userId === otherUserId) following = "CANNOT_FOLLOW_SELF"
-        following = `${user.username} is not following you.`
+        following = userId===otherUserId ? "CANNOT_FOLLOW_SELF" : `${user.username} is not following you.`
       }
       const userview = new UserViewDTO(user)
       return ({userview, following})

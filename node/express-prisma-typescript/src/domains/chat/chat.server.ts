@@ -39,3 +39,4 @@ export const handleConnection = async (socket: any): Promise<void> => {
     users.delete(userId)
   })
 }
+
