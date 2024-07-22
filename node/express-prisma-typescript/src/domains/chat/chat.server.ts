@@ -1,5 +1,3 @@
-import { httpServer, io } from '@server'
-import { chatAuth } from './middleware/chat.middleware'
 import { ChatService, ChatServiceImpl } from './service'
 import { FollowService, FollowServiceImpl } from '@domains/follow/service'
 
@@ -7,7 +5,6 @@ const chatService: ChatService = new ChatServiceImpl()
 const followService: FollowService = new FollowServiceImpl()
 
 export const handleConnection = async (socket: any): Promise<void> => {
-  //mostrar rooms disponibles  
   console.log('a user connected')
 
   const userId = socket.user.userId
@@ -24,15 +21,16 @@ export const handleConnection = async (socket: any): Promise<void> => {
       socket.emit('joined_room', roomId);
       console.log(`User ${userId} joined room ${roomId}`);
     } else {
-      socket.emit('error', 'You cannot join this room');
+      socket.emit('You cannot join this room');
     }
   });
 
   socket.on('chat_message', (data: { roomId: string; message: string }) => {
-  const { roomId, message } = data;
-  console.log(`Emitting message to room ${roomId}: ${message}`);
-  socket.to(roomId).emit('chat_message', { sender: userId, message });
-});
+    const { roomId, message } = data;
+    console.log(`Emitting message to room ${roomId}: ${message}`);
+    socket.to(roomId).emit('chat_message', { sender: userId, message });
+  });
+  
   socket.on('disconnect', () => {
     console.log('user disconnected')
   })
