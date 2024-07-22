@@ -7,7 +7,7 @@ const followService: FollowService = new FollowServiceImpl()
 export const handleConnection = async (socket: any): Promise<void> => {
   console.log('a user connected')
 
-  const userId = socket.user.userId
+  const userId: string = socket.user.userId
   const availableUsers = await followService.getMutuals(userId)
   console.log('Available chats:', availableUsers.map(user => {return user.name}))
   socket.emit('available_chats', availableUsers);
