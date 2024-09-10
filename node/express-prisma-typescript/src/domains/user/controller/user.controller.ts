@@ -28,6 +28,12 @@ userRouter.get('/me', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(user)
 })
 
+userRouter.delete('/me', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  await service.deleteUser(userId)
+  return res.status(HttpStatus.OK).json()
+})
+
 userRouter.get('/profile-upload-url', async (req: Request, res: Response) => {
   try {
     const { userId } = res.locals.context
