@@ -3,7 +3,7 @@ import HttpStatus from 'http-status'
 // express-async-errors is a module that handles async errors in express, don't forget import it in your new controllers
 import 'express-async-errors'
 
-import { BodyValidation } from '@utils'
+import { BodyValidation, withAuth } from '@utils'
 
 import { AuthService, AuthServiceImpl } from '../service'
 import { LoginInputDTO, SignupInputDTO } from '../dto'
@@ -17,7 +17,6 @@ authRouter.post('/signup', BodyValidation(SignupInputDTO), async (req: Request, 
   const data = req.body
   const token = await service.signup(data)
   return res.status(HttpStatus.CREATED).json(token)
-  
 })
 
 authRouter.post('/login', BodyValidation(LoginInputDTO), async (req: Request, res: Response) => {
@@ -26,8 +25,13 @@ authRouter.post('/login', BodyValidation(LoginInputDTO), async (req: Request, re
   return res.status(HttpStatus.OK).json(token)
 })
 
+authRouter.get('/verify', withAuth, async (req: Request, res: Response) => {
+  const {userId} = res.locals.context
+  console.log('verified with ', userId)
+  return res.status(HttpStatus.OK).json()
+})
 
-/**
+/**p
  * @swagger
  * components:
  *   schemas:
@@ -47,15 +51,15 @@ authRouter.post('/login', BodyValidation(LoginInputDTO), async (req: Request, re
  *         password:
  *           type: string
  *           description: User's password
- *         accTypeName:
- *           type: string
- *           description: Account type name
+ *         privacy:
+ *           type: boolean
+ *           description: True if account is private
  *       required:
  *         - email
  *         - name
  *         - username
  *         - password
- *         - accTypeName
+ *         - privacy
  * 
  *     LoginInputDTO:
  *       type: object

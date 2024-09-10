@@ -7,8 +7,10 @@ export interface PostService {
   deletePost: (userId: string, postId: string) => Promise<void>
   
   getPost: (userId: string, postId: string) => Promise<ExtendedPostDTO | null>
-  getLatestPosts: (userId: string, options: { limit?: number, before?: string, after?: string }) => Promise<ExtendedPostDTO[]>
-  getPostsByAuthor: (userId: any, authorId: string, options:{ limit?: number, before?: string, after?: string }) => Promise<ExtendedPostDTO[]>
+  getLatestPosts: (userId: string, options: { limit?: number, before?: string, after?: string }) => Promise<any>
+  getLatestPostsByFollowedUsers: (userId: string, options: { limit?: number, before?: string, after?: string }) => Promise<any>
+
+  getPostsByAuthor: (userId: any, authorId: string, options:{ limit?: number, before?: string, after?: string }) => Promise<any>
   getCommentsFromPost: (userId: string, postId: string, options:{ limit?: number, before?: string, after?: string }) => Promise <ExtendedPostDTO[] | []>
 
   canAccessUsersPosts: (userId: string, authorId: string) => Promise <boolean>

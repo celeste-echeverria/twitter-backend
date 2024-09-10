@@ -38,8 +38,9 @@ describe('AuthServiceImpl', () => {
         name: 'Test User',
         username: 'testuser',
         password: 'password123',
+        privacy: false
       };
-      const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), accTypeId: 'id'};
+      const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), privacy: false};
       const token = 'generated-token';
 
       mockUserService.getUserByEmailOrUsername.mockRejectedValue(new NotFoundException());
@@ -63,8 +64,9 @@ describe('AuthServiceImpl', () => {
         name: 'name',
         username: 'testuser',
         password: 'password123',
+        privacy: false
       };
-      const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), accTypeId: 'id'};
+      const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), privacy: false};
       const extendedUser: ExtendedUserDTO = { 
         ...user,
         email: 'test@example.com',
@@ -87,7 +89,7 @@ describe('AuthServiceImpl', () => {
         username: 'testuser',
         password: 'password123',
       };
-      const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), accTypeId: 'id'};
+      const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), privacy: false};
       const extendedUser: ExtendedUserDTO = { 
         ...user,
         email: 'test@example.com',
@@ -116,7 +118,7 @@ describe('AuthServiceImpl', () => {
         username: 'testuser',
         password: 'password123',
       };
-      const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), accTypeId: 'id'};
+      const user: UserDTO = { id: 'user-id', name: 'Test User', createdAt: new Date(), privacy: false};
       const extendedUser: ExtendedUserDTO = { 
         ...user,
         email: 'test@example.com',

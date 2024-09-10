@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from 'class-validator'
+import { IsBoolean, isBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from 'class-validator'
 
 export class TokenDTO {
   token!: string
@@ -23,16 +23,16 @@ export class SignupInputDTO {
   @IsStrongPassword()
     password: string
 
+  @IsBoolean()
   @IsOptional()
-    accTypeName?: string
+    privacy: boolean
 
-    
-  constructor (email: string, username: string, password: string, accTypeName: string, name: string) {
+  constructor (email: string, username: string, password: string, privacy: boolean, name: string) {
     this.email = email
     this.name = name
     this.password = password
     this.username = username
-    this.accTypeName = accTypeName
+    this.privacy = privacy
   }
 }
 

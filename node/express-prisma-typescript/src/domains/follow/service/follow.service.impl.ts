@@ -3,7 +3,7 @@ import { FollowRepository, FollowRepositoryImpl } from "../repository";
 import { ConflictException, InternalServerErrorException, NotFoundException } from "@utils/errors";
 import {db} from '@utils/database'
 import { FollowDTO } from "../dto";
-import { UserDTO } from "@domains/user/dto";
+import { UserDTO, UserViewDTO } from "@domains/user/dto";
 
 export class FollowServiceImpl implements FollowService {
     constructor(private readonly repository: FollowRepository = new FollowRepositoryImpl(db)) {}
@@ -77,7 +77,7 @@ export class FollowServiceImpl implements FollowService {
         }
     }
 
-    async getMutuals(userId: string): Promise <UserDTO[]> {
+    async getMutuals(userId: string): Promise <UserViewDTO[]> {
         try {
             const mutuals = await this.repository.getMutualFollowersByUserId(userId)
             console.log('mutuals for ', userId, 'are', mutuals)

@@ -1,12 +1,10 @@
 import { InternalServerErrorException, NotFoundException } from '@utils/errors'
 import { OffsetPagination } from 'types'
-import { ExtendedUserDTO, UserDTO, UserViewDTO } from '../dto'
+import { ExtendedUserDTO, UserDTO, UserViewDTO, UserViewWithFollowStatusDTO } from '../dto'
 import { UserRepository, UserRepositoryImpl } from '../repository'
 
 import { UserService } from './user.service'
 import { db } from '@utils/database'
-import { AccTypeService } from '@domains/accountType/services'
-import { AccTypeServiceImpl } from '@domains/accountType/services/accType.service.impl'
 import { SignupInputDTO } from '@domains/auth/dto'
 import { FollowService, FollowServiceImpl } from '@domains/follow/service'
 import { getPresignedGetURL, getPresignedPutUrl } from '@utils/aws.s3'
@@ -14,23 +12,12 @@ import { getPresignedGetURL, getPresignedPutUrl } from '@utils/aws.s3'
 export class UserServiceImpl implements UserService {
   constructor (
     private readonly userRepository: UserRepository = new UserRepositoryImpl(db),
-    private readonly accTypeService: AccTypeService = new AccTypeServiceImpl(),
     private readonly followService: FollowService = new FollowServiceImpl(),
   ) {}
 
   async createUser (data: SignupInputDTO): Promise<UserDTO> {
     try {
-      //get Public account type
-      const accType = await this.accTypeService.getAccTypeByTypeName(data.accTypeName ?? "Public")
-      if(accType === null) throw new NotFoundException('Account Type')
-
-      const userData = {
-        ...data,
-        accTypeId: accType.id,
-      }
-      const { accTypeName, ...createData } = userData;
-      return await this.userRepository.create(createData)
-
+      return await this.userRepository.create(data)
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("createUser")
@@ -52,39 +39,45 @@ export class UserServiceImpl implements UserService {
     try {
       const user = await this.userRepository.getById(userId)
       if (!user) throw new NotFoundException('User')
-      const accType = await this.accTypeService.getAccTypeById(user.accTypeId)
-      if (accType === null) throw new NotFoundException('Account Type')
 
-      return ({...user, accTypeName: accType.typeName})
+      return (user)
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getUser")
     }
   }
 
-  async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserDTO[]> {
+  async getUserRecommendations(
+    userId: any,
+    options: OffsetPagination
+  ): Promise<UserViewDTO[]> {
     try {
-      //Gets followed users Ids
-      const followedUserIds = await this.followService.getFollowedUsersId(userId)
-      if (followedUserIds.length === 0) return []; 
-      
-      //Gets id from users followed by every followed user
-      const followPromises = followedUserIds.map(followedUserId => 
+      // Obtiene los IDs de los usuarios seguidos
+      const followedUserIds = await this.followService.getFollowedUsersId(userId);
+      if (followedUserIds.length === 0) return [];
+  
+      // Obtiene los IDs de los usuarios seguidos por cada usuario seguido
+      const followPromises = followedUserIds.map((followedUserId) =>
         this.followService.getFollowedUsersId(followedUserId)
       );
-      const usersFollowedByFollowedUsers = await Promise.all(followPromises); //Paralelizacion? revisar
+  
+      const usersFollowedByFollowedUsers = await Promise.all(followPromises); // Paralelización
       let recommendedUserIds = usersFollowedByFollowedUsers.flat();
-
-      recommendedUserIds = Array
-      .from(new Set(recommendedUserIds))    //Deletes duplicates
-      .filter(recommendedUserId => recommendedUserId !== userId); //filters out my own Id
-
-      return await this.userRepository.getRecommendedUsersPaginated(recommendedUserIds, options);
-    
+  
+      // Elimina duplicados y filtra usuarios que ya sigo o mi propio ID
+      recommendedUserIds = Array.from(new Set(recommendedUserIds))
+        .filter(
+          (recommendedUserId) =>
+            recommendedUserId !== userId && !followedUserIds.includes(recommendedUserId) // Filtrar aquellos que ya sigo
+        );
+  
+      return await this.userRepository.getRecommendedUsersPaginated(
+        recommendedUserIds,
+        options
+      );
     } catch (error) {
-      throw new InternalServerErrorException("getUserRecommendations")
+      throw new InternalServerErrorException("getUserRecommendations");
     }
-    
   }
 
   async deleteUser (userId: any): Promise<void> {
@@ -98,30 +91,25 @@ export class UserServiceImpl implements UserService {
   async isPublic (userId: string): Promise<boolean> {
     try {
       const user = await this.getUser(userId)
-      const accType = await this.accTypeService.getAccTypeByTypeName('Public')
-      return user.accTypeId === accType?.id
+      return !user.privacy
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("isPublic")
     }
   }
 
-  async setUserAccountType (userId: any, accTypeId: any) : Promise<UserDTO> {
+  async setUserPrivacy (userId: any, privacy: boolean) : Promise<UserDTO> {
     try {
-      const accType = await this.accTypeService.getAccTypeById(accTypeId)
-      if (!accType) throw new NotFoundException('Account Type')
-      return await this.userRepository.setAccountType(userId, accTypeId, accType.typeName)
+      return await this.userRepository.setPrivacy(userId, privacy)
     } catch (error) {
       if (error instanceof NotFoundException) throw error
-      throw new InternalServerErrorException("setUserAccountType")
+      throw new InternalServerErrorException("setUserPrivacy")
     }
   }
 
   async getPublicUsersIds (): Promise <string[]> {
     try {
-      const accType = await this.accTypeService.getAccTypeByTypeName('Public')
-      if (accType === null) throw new NotFoundException('Account Type')
-      return await this.userRepository.getUsersIdsByAccType(accType.id)
+      return await this.userRepository.getPublicUsersIds()
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getPublicUsersIds")
@@ -153,38 +141,41 @@ export class UserServiceImpl implements UserService {
     } 
   }
 
-  async getUserView(userId: string, otherUserId: string): Promise <{userview: UserViewDTO, following: string}> {
+  async getExtendedUserView(userId: string, otherUserId: string): Promise <UserViewWithFollowStatusDTO> {
     try {
-      const user = await this.userRepository.getViewById(otherUserId)
+      const user = await this.userRepository.getExtendedViewById(otherUserId)
       if (!user) throw new NotFoundException("User")
-      if (user.profilePicture){
-        user.profilePicture = await getPresignedGetURL(user.profilePicture)
-      } 
-      let following: string
-      if (await this.followService.userIsFollowing(userId, otherUserId)) {
-        following = `${user.username} is following you.`
-      } else {
-        following = userId===otherUserId ? "CANNOT_FOLLOW_SELF" : `${user.username} is not following you.`
-      }
-      const userview = new UserViewDTO(user)
-      return ({userview, following})
-    } catch (error) {
+
+      user.followedByActiveUser = await this.followService.userIsFollowing(userId, otherUserId)
+
+      return user
+
+    } catch (error: any) {      
+      console.log(error, error.message)
       if (error instanceof NotFoundException) throw error
-      throw new InternalServerErrorException("getUserView")
+      throw new InternalServerErrorException("getExtendedUserView")
     }
   }
 
   async getUsersMatchingUsername(username: string, options: OffsetPagination): Promise <UserViewDTO[]> {
     try {
       const users = await this.userRepository.getUsersMatchingUsername(username, options)
-      users.map(async (user) => {
-        if (user.profilePicture) {
-          user.profilePicture = await getPresignedGetURL(user.profilePicture)
-        }
-      })
       return users
     } catch (error) {
       throw new InternalServerErrorException("getUsersMatchingUsername")
+    }
+  }
+
+  async getUserView (userId: string, otherUserId: string): Promise<UserViewDTO | null> {
+    try {
+    
+      const user = await this.userRepository.getViewById(otherUserId)
+      return user ?? null
+
+    } catch (error: any) {      
+      console.log(error, error.message)
+      if (error instanceof NotFoundException) throw error
+      throw new InternalServerErrorException("getUserView")
     }
   }
 

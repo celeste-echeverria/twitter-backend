@@ -9,7 +9,7 @@ import { ErrorHandling } from '@utils/errors'
 import { setupSwagger } from '@utils/swagger'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import { handleConnection } from '@domains/chat/chat.server'
+import { handleConnection } from '@domains/chat/controller/chat.config'
 import { chatAuth } from '@domains/chat/middleware/chat.middleware'
 
 
@@ -47,7 +47,8 @@ export const io = new Server(httpServer, {
   }
 })
 
-io.use(chatAuth).on('connection', handleConnection)
+io.use(chatAuth)
+io.on('connection', handleConnection)
 
 httpServer.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`);

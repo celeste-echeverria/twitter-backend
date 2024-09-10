@@ -105,8 +105,10 @@ export class PostServiceImpl implements PostService {
     }
   }
 
-  async getLatestPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+  async getLatestPosts (userId: string, options: CursorPagination): Promise<any> {
     try {
+      const { limit, after, before } = options;
+
       //Gets id of all authors followed by user
       const followedAuthorIds = await this.followService.getFollowedUsersId(userId)
       //Gets id of all public users
@@ -116,7 +118,17 @@ export class PostServiceImpl implements PostService {
       const visibleAuthorIdsSet = new Set([...followedAuthorIds, ...publicAuthorIds]);
       const visibleAuthorIds = Array.from(visibleAuthorIdsSet)
 
-      return await this.postRepository.getAllByDatePaginated(visibleAuthorIds, options)
+      const posts = await this.postRepository.getAllByDatePaginated(visibleAuthorIds, {
+        limit, after, before
+      })
+
+      const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : undefined;
+
+      return {
+        posts: posts,
+        nextCursor
+      };
+
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getLatestPosts")
@@ -124,29 +136,53 @@ export class PostServiceImpl implements PostService {
     
   }
 
-  async getPostsByAuthor (userId: any, authorId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+  async getLatestPostsByFollowedUsers (userId: string, options: CursorPagination): Promise<any> {
+    try {
+      const { limit, after, before } = options;
+
+      //Gets id of all authors followed by user
+      const followedAuthorIds = await this.followService.getFollowedUsersId(userId)
+      
+      const posts = await this.postRepository.getAllByDatePaginated(followedAuthorIds, {
+        limit, after, before
+      })
+
+      const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : undefined;
+
+      return {
+        posts: posts,
+        nextCursor
+      };
+
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error
+      throw new InternalServerErrorException("getLatestPostsByFollowedUsers")
+    }
+    
+  }
+
+  async getPostsByAuthor (userId: any, authorId: string, options: CursorPagination): Promise<any> {
     try {
       const canAccess = await this.canAccessUsersPosts(userId, authorId)
       if (!canAccess) throw new NotFoundException('Posts')
-
-      const posts =  await this.postRepository.getByAuthorId(authorId, options)
       
-      const processedPosts = await Promise.all(posts.map(async (post) => {
-        if(post.author.profilePicture) {
-          post.author.profilePicture = await getPresignedGetURL(post.author.profilePicture)
-        }
-        if (post.images && post.images.length > 0) {
-          const urlPromises = post.images.map(async (image) => {
-            return await getPresignedGetURL(image);
-          });
-          const urls = await Promise.all(urlPromises);
-          return { ...post, images: urls };
-        } else {
-          return post;
-        }
-      }))
+      // Extract pagination options
+      const { limit, after, before } = options;
 
-      return processedPosts
+      // Get posts from repository
+      const posts = await this.postRepository.getByAuthorId(authorId, {
+        limit,
+        after,
+        before
+      });
+      
+      const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : undefined;
+
+      return {
+        posts: posts,
+        nextCursor
+      };
+
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getPostsByAuthor")
@@ -177,11 +213,7 @@ export class PostServiceImpl implements PostService {
   async getCommentsFromPost (userId: string, postId: string, options:{ limit?: number, before?: string, after?: string }): Promise <ExtendedPostDTO[] | []> {
     try {
       const replies = await this.postRepository.getCommentsByMainPostId(postId, options)
-      replies.map(async (reply) => {
-        if(reply.author.profilePicture){
-          reply.author.profilePicture = await getPresignedGetURL(reply.author.profilePicture)
-        }
-      })
+      
       return replies
     } catch (error) {
       if (error instanceof NotFoundException) throw error

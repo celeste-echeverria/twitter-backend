@@ -38,6 +38,8 @@ export class AuthServiceImpl implements AuthService {
       return { token }
 
     } catch (error) {
+      console.log('error in auth:', error)
+
       if (error instanceof NotFoundException) throw error
       if (error instanceof ConflictException) throw error
       throw new InternalServerErrorException("signup")
@@ -54,6 +56,7 @@ export class AuthServiceImpl implements AuthService {
       const token = generateAccessToken({ userId: user.id })
       return { token }
     } catch (error) {
+      console.log('error in auth:', error)
       if (error instanceof NotFoundException) throw new UnauthorizedException("Invalid credentials")
       if (error instanceof UnauthorizedException) throw error
       throw new InternalServerErrorException("login")

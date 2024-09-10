@@ -33,7 +33,7 @@ postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (r
 })
 
 //Get comments in a post
-postRouter.get('/comments/:postId', async (req: Request, res: Response) => {
+postRouter.get('/comments/by_post/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
   const { limit, before, after } = req.query as Record<string, string>
@@ -44,16 +44,36 @@ postRouter.get('/comments/:postId', async (req: Request, res: Response) => {
 
 //Get Latest Posts
 postRouter.get('/', async (req: Request, res: Response) => {
+  console.log('req on latest posts')
   const { userId } = res.locals.context
   const { limit, before, after } = req.query as Record<string, string>
-  const posts = await postService.getLatestPosts(userId, { limit: Number(limit), before, after })
 
-  return res.status(HttpStatus.OK).json(posts)
+  const {posts, nextCursor} = await postService.getLatestPosts(userId, { limit: Number(limit), before, after })
+  console.log('checking', posts.length, limit )
+  return res.status(HttpStatus.OK).json({
+    posts,
+    nextCursor: nextCursor, 
+    hasMore: posts.length == limit, 
+  });
+})
+
+//get posts made by followed users
+postRouter.get('/following', async (req: Request, res: Response) => {
+  console.log('req on followed users posts')
+  const { userId } = res.locals.context
+  const { limit, before, after } = req.query as Record<string, string>
+
+  const {posts, nextCursor} = await postService.getLatestPostsByFollowedUsers(userId, { limit: Number(limit), before, after })
+  return res.status(HttpStatus.OK).json({
+    posts,
+    nextCursor: nextCursor, 
+    hasMore: posts.length == limit, 
+  });
 })
 
 //Get post by postId
 postRouter.get('/:postId', async (req: Request, res: Response) => {
-
+  console.log('req on /post/:postId')
   const { userId } = res.locals.context
   const { postId } = req.params
 
@@ -64,18 +84,23 @@ postRouter.get('/:postId', async (req: Request, res: Response) => {
 
 //Get posts by userId
 postRouter.get('/by_user/:userId', async (req: Request, res: Response) => {
-
+  console.log('REQUEST RECEIVED ON BY_USER')
   const { userId } = res.locals.context
   const { limit, before, after } = req.query as Record<string, string>
   const { userId: authorId } = req.params
 
-  const posts = await postService.getPostsByAuthor(userId, authorId, { limit: Number(limit), before, after })
-
-  return res.status(HttpStatus.OK).json(posts)
+  const {posts, nextCursor} = await postService.getPostsByAuthor(userId, authorId, { limit: Number(limit), before, after })
+  console.log('checking', posts.length, limit )
+  return res.status(HttpStatus.OK).json({
+    posts,
+    nextCursor: nextCursor, 
+    hasMore: posts.length == limit, 
+  });
 })
 
 //Create a new post
 postRouter.post('/', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
+  console.log('request POST on post post/')
   const { userId } = res.locals.context
   const data = req.body
   
@@ -301,7 +326,7 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /posts/by_user/{userId}:
+ * /post/by_user/{userId}:
  *   get:
  *     summary: Get posts by user ID
  *     tags: [Post]

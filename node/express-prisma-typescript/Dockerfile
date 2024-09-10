@@ -18,6 +18,7 @@ COPY . .
 
 EXPOSE 8080
 
+COPY prisma ./prisma/
 RUN yarn db:generate
 RUN yarn build
 

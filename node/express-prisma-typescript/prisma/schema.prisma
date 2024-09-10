@@ -24,40 +24,21 @@ model User {
   email          String  @unique // Unique constraint
   password       String
   profilePicture String?
+  privacy        Boolean @default(false)
 
   createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  updatedAt DateTime?
   deletedAt DateTime? // Optional value
 
-  accTypeId String      @db.Uuid // Foreign Key
-  accType   AccountType @relation(fields: [accTypeId], references: [id])
-
   posts     Post[]
-  follows   Follow[] @relation(name: "follows")
+  following  Follow[] @relation(name: "follows")
   followers Follow[] @relation(name: "followers")
 
   reactions Reaction[]
 
   messagesSent Message[] @relation(name: "sender")
-  messagesReceived Message [] @relation(name: "recipient")
-}
 
-model Message {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  createdAt DateTime @default(now())
-  content String
-  
-  senderId String   @db.Uuid // Foreign Key
-  sender User @relation(name: "sender", fields: [senderId], references: [id])
-  
-  recipientId String   @db.Uuid // Foreign Key
-  recipient User @relation(name: "recipient", fields: [recipientId], references: [id])
-}
-
-model AccountType {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key 
-  typeName String @unique
-  users    User[]
+  chats Chat[]
 }
 
 model Follow {
@@ -80,34 +61,30 @@ model Post {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
 
   authorId String   @db.Uuid // Foreign Key
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+
   content  String   @db.VarChar(240) // Limit the content to 240 characters
-  images   String[]
+  images   String[] 
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
-  repliesToPostId String? @db.Uuid
-  repliesToPost   Post?   @relation(name: "RepliesTo", fields: [repliesToPostId], references: [id])
-  replies         Post[]  @relation(name: "RepliesTo")
-
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
-
+  parentId String? @db.Uuid
+  parent   Post?   @relation(name: "RepliesTo", fields: [parentId], references: [id])
+  
+  comments         Post[]  @relation(name: "RepliesTo")
   reactions         Reaction[]
-  qtyTotalReactions Int        @default(0)
-  qtyLikes          Int        @default(0)
-  qtyRetweets       Int        @default(0)
-  qtyComments       Int        @default(0)
-}
-
-model ReactionType {
-  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
-  typeName  String     @unique
-  reactions Reaction[]
+  
+  qtyTotalReactions Int   @default(0)
+  qtyLikes          Int   @default(0)
+  qtyRetweets       Int   @default(0)
+  qtyComments       Int   @default(0)
 }
 
 model Reaction {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  type String 
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -115,11 +92,30 @@ model Reaction {
 
   userId         String @db.Uuid // Foreign Key
   postId         String @db.Uuid // Foreign Key
-  reactionTypeId String @db.Uuid // Foreign Key
 
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade) // Many to one
   post         Post         @relation(fields: [postId], references: [id], onDelete: Cascade) // Many to one
-  reactionType ReactionType @relation(fields: [reactionTypeId], references: [id], onDelete: Cascade) // Many to one
 
-  @@unique([userId, postId, reactionTypeId]) // Unique constraint on the combination of userId, postId, and reactionTypeId
+  @@unique([userId, postId, type])
+}
+
+model Message {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+  createdAt DateTime @default(now())
+  content String
+
+  senderId String   @db.Uuid // Foreign Key
+  sender User @relation(name: "sender", fields: [senderId], references: [id])
+
+  chatId    String   @db.Uuid()
+  chat   Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+model Chat {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  users     User[]  
+  messages Message[]
 }

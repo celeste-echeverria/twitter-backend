@@ -2,7 +2,8 @@ import { Constants } from '@utils';
 import jwt from 'jsonwebtoken'
 
 export const chatAuth = (socket: any, next: any): void => {
-    const token = socket.request.headers['authorization']
+    const token = socket.handshake.headers['authorization']
+    
     if (!token) {
         const err = new Error('Authentication error. Token not provided.')
         return next(err)

@@ -7,6 +7,7 @@ import { authRouter } from '@domains/auth'
 import { healthRouter } from '@domains/health'
 import { followRouter } from '@domains/follow'
 import { reactionRouter } from '@domains/reaction/controller/reaction.controller'
+import { chatRouter } from '@domains/chat/controller/chat.controller'
 
 export const router = Router()
 
@@ -16,5 +17,6 @@ router.use('/user', withAuth, userRouter)
 router.use('/post', withAuth, postRouter)
 router.use('/follower', withAuth, followRouter)
 router.use('/reaction', withAuth, reactionRouter)
+router.use('/chat', withAuth, chatRouter)
 
 export default router

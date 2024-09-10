@@ -1,45 +1,67 @@
-import { UserDTO } from "@domains/user/dto"
-import { IsNotEmpty, IsString } from "class-validator"
+import { UserDTO, UserViewDTO } from "@domains/user/dto"
+import { IsNotEmpty, IsString, IsUUID, MaxLength } from "class-validator"
+
 
 export class RoomDTO {
-    constructor(room: RoomDTO){
-        this.id = room.id
-        this.users = room.users 
+    constructor (room: RoomDTO) {
+        this.id = room.id;
+        this.createdAt = room.createdAt;
+        this.messages = room.messages;
+        this.users = room.users
     }
-    id: string
-    users: UserDTO[]
+    id: string;
+    users: UserViewDTO[]
+    messages: MessageDTO[]
+    createdAt: Date;
 }
 
-export class MessageDTO {
-    constructor(message: MessageDTO){
-        this.content = message.content
-        this.senderId = message.senderId
-        this.recipientId = message.recipientId
+export class MessageDTO{
+    constructor (message: MessageDTO) {
+        this.id = message.id;
+        this.chatId = message.chatId;
+        this.senderId = message.senderId;
+        this.content = message.content;
+        this.createdAt = message.createdAt;
     }
-
+    id: string;
+    chatId: string;
+    senderId: string;
     content: string
-    senderId: string
-    recipientId: string
+    createdAt: Date;
 }
+
 
 export class ExtendedMessageDTO extends MessageDTO {
     constructor(message: ExtendedMessageDTO){
         super(message)
         this.sender = message.sender
     }
-    sender: UserDTO
+    sender: UserViewDTO
 
 }
 
-export class MessageInputDTO {
-    constructor(toUserId: string, message: string) {
-        this.toUserId = toUserId,
-        this.message = message
-    }
-    @IsNotEmpty()
-    @IsString()
-    toUserId: string
+export class CreateMessageInputDTO {
 
+    constructor (chatId: string, content: string) {
+        this.chatId = chatId;
+        this.content = content;
+    }
     @IsString()
-    message: string
+    @IsNotEmpty()
+    chatId!: string 
+    @IsString()
+    @IsNotEmpty()
+    content!: string
+    
+}
+
+
+export class CreateRoomInputDTO {
+    @IsString()
+    @IsNotEmpty()
+    otherUserId!: string 
+    
+    constructor (otherUserId: string) {
+        this.otherUserId = otherUserId
+    }
 }

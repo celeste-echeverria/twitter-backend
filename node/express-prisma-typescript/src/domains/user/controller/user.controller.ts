@@ -24,7 +24,7 @@ userRouter.get('/', async (req: Request, res: Response) => {
 userRouter.get('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
-  const user = await service.getUserView(userId, userId)
+  const user = await service.getExtendedUserView(userId, userId)
   return res.status(HttpStatus.OK).json(user)
 })
 
@@ -50,14 +50,6 @@ userRouter.get('/profile-download-url', async (req: Request, res: Response) => {
   }
 })
 
-userRouter.get('/:userId', async (req: Request, res: Response) => {
-  const { userId: otherUserId } = req.params
-  const { userId } = res.locals.context
-  const {userview, following} = await service.getUserView(userId, otherUserId)
-
-  return res.status(HttpStatus.OK).json({userview, following})
-})
-
 userRouter.delete('/del', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   await service.deleteUser(userId)
@@ -70,6 +62,16 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
   const { username } = req.params
   const users = await service.getUsersMatchingUsername(username, { limit: Number(limit), skip: Number(skip) })
   return res.status(HttpStatus.OK).json(users)
+})
+
+userRouter.get('/:userId', async (req: Request, res: Response) => {
+  const { userId: otherUserId } = req.params
+  console.log('params: ', otherUserId)
+  console.log('req on /user/:userId with userId =', otherUserId)
+  const { userId } = res.locals.context
+  const userview = await service.getExtendedUserView(userId, otherUserId)
+  console.log(userview)
+  return res.status(HttpStatus.OK).json(userview)
 })
 
 /**
@@ -90,13 +92,9 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
  *           type: string
  *           format: date-time
  *           description: The timestamp when the user was created
- *         accTypeId:
- *           type: string
- *           description: The identifier of the account type
- *         accTypeName:
- *           type: string
- *           nullable: true
- *           description: The name of the account type
+ *         privacy:
+ *           type: boolean
+ *           description: True if account is private
  *         profilePicture:
  *           type: string
  *           nullable: true

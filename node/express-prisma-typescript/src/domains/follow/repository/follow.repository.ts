@@ -1,4 +1,4 @@
-import { UserDTO } from "@domains/user/dto";
+import { UserDTO, UserViewDTO } from "@domains/user/dto";
 import { FollowDTO } from "../dto";
 
 export interface FollowRepository {
@@ -9,6 +9,6 @@ export interface FollowRepository {
     getFollowedUsersIds: (userId: string) => Promise<string[]>
     isFollowing: (followerId: string, followedId: string) => Promise<boolean>
     getFollowByUsersId: (followerId: string, followedId: string) => Promise<FollowDTO | null>
-    getMutualFollowersByUserId: (userId: string) => Promise <UserDTO[]>
+    getMutualFollowersByUserId: (userId: string) => Promise <UserViewDTO[]>
     areMutualFollowers: (userId: string, otherUserId: string) => Promise <boolean>
 } 

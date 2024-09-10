@@ -25,7 +25,7 @@ const options = {
     ],
     servers: [
     {
-      url: 'https://twitterbackend-6h3u2hjh.b4a.run/api',
+      url: 'http://localhost:8080/api',
       description: 'Local server'
     }
   ],

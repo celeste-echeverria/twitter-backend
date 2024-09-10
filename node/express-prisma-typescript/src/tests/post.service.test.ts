@@ -51,7 +51,7 @@ describe('PostServiceImpl', () => {
         authorId: 'authorid',
         content: body.content,
         createdAt: new Date(),
-        repliesToPostId: null
+        parentId: null
       }
 
       jest.spyOn(validator, 'validate').mockResolvedValue([]);
@@ -140,7 +140,7 @@ describe('PostServiceImpl', () => {
         authorId: 'authorid',
         content: 'This is a post content',
         createdAt: new Date(),
-        repliesToPostId: null,
+        parentId: null,
         author,
         qtyComments: 0, qtyLikes: 0, qtyRetweets: 0
       };

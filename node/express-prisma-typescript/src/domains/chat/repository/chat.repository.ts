@@ -1,6 +1,9 @@
-import { MessageDTO } from '../dto';
+import { CreateMessageInputDTO, MessageDTO, RoomDTO } from '../dto';
 
 export interface ChatRepository {
-    saveMessage: (senderId: string, recipientId: string, content: string) => Promise<MessageDTO>
-    getMessagesFromChat: (userId: string) => Promise <MessageDTO[]>
+    getMessagesFromChat: (userId: string, otherUserId: string) => Promise <MessageDTO[]>
+    createChat: (userId: string,otherUserId: string) => Promise<RoomDTO>
+    getUsersChat: (userId: string,otherUserId: string) => Promise<RoomDTO | null>
+    getChatById: (chatId: string) => Promise <RoomDTO | null>
+    createMessage(userId: string, chatId: string, content: string): Promise<MessageDTO | null>
 }

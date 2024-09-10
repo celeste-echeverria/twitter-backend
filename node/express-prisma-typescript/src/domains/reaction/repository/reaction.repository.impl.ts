@@ -5,11 +5,11 @@ import { ReactionRepository } from "./reaction.repository";
 export class ReactionRepositoryImpl implements ReactionRepository {
     constructor(private readonly db: PrismaClient) {}
 
-    async create (reactionTypeId: string, userId: string, postId: string): Promise <ReactionDTO> {
+    async create (type: string, userId: string, postId: string): Promise <ReactionDTO> {
         const reaction = await this.db.reaction.create({
             data: {
                 userId,
-                reactionTypeId,
+                type,
                 postId
             }
         });
@@ -24,13 +24,13 @@ export class ReactionRepositoryImpl implements ReactionRepository {
         })
     }
 
-    async getUserReactionFromPost(userId: string, postId: string, reactionTypeId: string): Promise <ReactionDTO | null> {
+    async getUserReactionFromPost(userId: string, postId: string, type: string): Promise <ReactionDTO | null> {
         const reaction = await this.db.reaction.findUnique({
             where: {
-                userId_postId_reactionTypeId: {
+                userId_postId_type: {
                     userId,
                     postId,
-                    reactionTypeId
+                    type
                 }
                 
             }
@@ -45,11 +45,11 @@ export class ReactionRepositoryImpl implements ReactionRepository {
         return reactions.map(reaction => new ReactionDTO(reaction))
     }
 
-    async getReactionsByUserIdAndType(userId: string, reactionTypeId: string): Promise<ReactionDTO[]> {
+    async getReactionsByUserIdAndType(userId: string, type: string): Promise<ReactionDTO[]> {
         const reactions = await this.db.reaction.findMany({
             where: { 
                 userId,
-                reactionTypeId
+                type
             },
         });
         return reactions.map(reaction => new ReactionDTO(reaction))
@@ -59,6 +59,7 @@ export class ReactionRepositoryImpl implements ReactionRepository {
         const reaction = await this.db.reaction.findUnique({
           where: { id },
         });
+        console.log('FOUND REACTION:', reaction)
         return (reaction != null) ? new ReactionDTO(reaction) : null
     }
     

@@ -15,7 +15,7 @@ export class PostRepositoryImpl implements PostRepository {
         content: data.content,
         images: data.images,
         authorId,
-        repliesToPostId: mainPostId
+        parentId: mainPostId
       }
     });
     return new PostDTO(post);
@@ -34,7 +34,8 @@ export class PostRepositoryImpl implements PostRepository {
           select:{
             id: true, name: true, username: true, email: true, profilePicture: true
           }
-        }
+        },
+        reactions: true,
       },
       orderBy: [
         {
@@ -62,7 +63,8 @@ export class PostRepositoryImpl implements PostRepository {
         id: postId
       },
       include: {
-        replies: true,
+        reactions: true,
+        comments: true,
         author: {
           select: {
             id: true, name: true, username: true, email: true, profilePicture: true
@@ -87,7 +89,8 @@ export class PostRepositoryImpl implements PostRepository {
             id: true, name: true, username: true, email: true, profilePicture: true
           }
         },
-        replies: {
+        reactions: true,
+        comments: {
           orderBy: {
             qtyTotalReactions: 'desc'
           }
@@ -151,14 +154,15 @@ export class PostRepositoryImpl implements PostRepository {
       skip: options.after ?? options.before ? 1 : undefined,
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
       where: {
-        repliesToPostId: postId
+        parentId: postId
       },
       include: {
         author: {
           select: {
             id: true, name: true, username: true, email: true, profilePicture: true
           }        
-        }
+        },
+        reactions: true,
       },
       orderBy: {
         qtyTotalReactions: 'desc'

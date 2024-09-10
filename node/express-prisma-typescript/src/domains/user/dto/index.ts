@@ -1,19 +1,20 @@
+import { FollowDTO } from "@domains/follow/dto"
+import { Follow } from "@prisma/client"
+
 export class UserDTO {
   constructor (user: UserDTO) {
     this.id = user.id
     this.name = user.name
-    this.createdAt = user.createdAt
-    this.accTypeName = user.accTypeName
-    this.accTypeId = user.accTypeId
+    this.privacy = user.privacy
     this.profilePicture = user.profilePicture
+    this.createdAt = user.createdAt
   }
 
   id: string
   name: string | null
-  createdAt: Date
-  accTypeId: string
-  accTypeName?: string
+  privacy: boolean
   profilePicture?: string | null
+  createdAt: Date
 }
 
 export class ExtendedUserDTO extends UserDTO {
@@ -41,4 +42,22 @@ export class UserViewDTO {
   name: string | null
   username: string
   profilePicture: string | null
+}
+
+export class UserViewWithFollowStatusDTO {
+  constructor (user: UserViewWithFollowStatusDTO) {
+    this.id = user.id
+    this.name = user.name
+    this.username = user.username
+    this.profilePicture = user.profilePicture
+    this.privacy = user.privacy
+    this.followedByActiveUser = user.followedByActiveUser
+  }
+
+  id: string
+  name: string | null
+  username: string
+  profilePicture: string | null
+  privacy: boolean
+  followedByActiveUser: boolean
 }

@@ -1,5 +1,6 @@
 import { ArrayMaxSize, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
 import { UserViewDTO } from '@domains/user/dto'
+import { ReactionDTO } from '@domains/reaction/dto'
 
 export class CreatePostInputDTO {
   @IsString()
@@ -19,8 +20,9 @@ export class PostDTO {
     this.content = post.content
     this.images = post.images
     this.createdAt = post.createdAt
-    this.repliesToPostId = post.repliesToPostId 
-    this.replies = post.replies ? post.replies.map(reply => new PostDTO(reply)) : [];
+    this.parentId = post.parentId 
+    this.comments = post.comments ? post.comments.map(comment => new PostDTO(comment)) : [];
+    this.reactions = post.reactions ? post.reactions.map(reaction => new ReactionDTO(reaction)) : [];
   }
 
   id: string
@@ -28,8 +30,9 @@ export class PostDTO {
   content: string
   images?: string[]
   createdAt: Date
-  repliesToPostId: string | null
-  replies?: PostDTO[]
+  parentId: string | null
+  comments?: PostDTO[]
+  reactions?: ReactionDTO[]
 }
 
 export class ExtendedPostDTO extends PostDTO {

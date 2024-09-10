@@ -13,25 +13,24 @@ const reactionService : ReactionService = new ReactionServiceImpl()
 reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context 
   const { postId } = req.params
-  const { reactionTypeName }  = req.body
-
-  const reaction = await reactionService.createReaction(reactionTypeName, userId, postId)
+  const { reactionType }  = req.body
+  const reaction = await reactionService.createReaction(reactionType, userId, postId)
   return res.status(HttpStatus.OK).json(reaction)
 })
 
-reactionRouter.delete('/:reactionId', async (req: Request, res: Response) => {
+reactionRouter.delete('/delete', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
-  const { reactionId } = req.params
-
+  const { reactionId } = req.body
+  console.log('DELETING ', reactionId)
   await reactionService.deleteReaction(reactionId, userId)
   return res.status(HttpStatus.OK).send(`Deleted reaction ${reactionId}`)
 })
 
-reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Response) => {
-  const { authorId, reactionTypeName } = req.params
+reactionRouter.get('/:authorId/:type', async (req: Request, res: Response) => {
+  const { authorId, type } = req.params
 
   //TO DO: Get reactions from user 
-  const reactions = await reactionService.getUserLikesOrRetweets(authorId, reactionTypeName)
+  const reactions = await reactionService.getUserLikesOrRetweets(authorId, type)
   return res.status(HttpStatus.OK).json(reactions)
 
 })
@@ -52,13 +51,13 @@ reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Res
  *         userId:
  *           type: string
  *           description: The ID of the user who reacted
- *         reactionTypeName:
+ *         type:
  *           type: string
  *           description: The type of reaction (e.g., like, retweet)
  *       required:
  *         - postId
  *         - userId
- *         - reactionTypeName
+ *         - type
  */
 
 /**
@@ -81,7 +80,7 @@ reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Res
  *           schema:
  *             type: object
  *             properties:
- *               reactionTypeName:
+ *               type:
  *                 type: string
  *                 description: The type of reaction (e.g., like, retweet)
  *     security:
@@ -126,7 +125,7 @@ reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Res
 
 /**
  * @swagger
- * /reaction/{authorId}/{reactionTypeName}:
+ * /reaction/{authorId}/{type}:
  *   get:
  *     summary: Get reactions of a specific type by a user
  *     tags: [Reaction]
@@ -138,7 +137,7 @@ reactionRouter.get('/:authorId/:reactionTypeName', async (req: Request, res: Res
  *         required: true
  *         description: The ID of the user whose reactions to retrieve
  *       - in: path
- *         name: reactionTypeName
+ *         name: type
  *         schema:
  *           type: string
  *         required: true

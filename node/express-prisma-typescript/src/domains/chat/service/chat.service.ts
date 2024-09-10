@@ -1,7 +1,7 @@
-// src/services/ChatService.ts
-import { MessageDTO, RoomDTO } from '../dto';
+import {MessageDTO, RoomDTO } from '../dto';
 
 export interface ChatService {
-  saveMessage: (senderId: string, toUserId: string, content: string) => Promise<MessageDTO> 
-  getOldMessagesFromChat: (userId: string) => Promise<Map<string, MessageDTO[]> | undefined>
-}
+  getOldMessagesFromChat: (userId: string, otherUserId: string) => Promise<MessageDTO[]>
+  createRoom: (userId: string, otherUserId: string) => Promise<RoomDTO | null>
+  createMessage: (userId: string, chatId: string, content: string) => Promise<MessageDTO>
+} 

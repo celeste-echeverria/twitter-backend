@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { FollowRepository } from "./follow.repository";
-import { UserDTO } from "@domains/user/dto";
+import { UserDTO, UserViewDTO } from "@domains/user/dto";
 import { FollowDTO } from "../dto";
 
 
@@ -75,12 +75,12 @@ export class FollowRepositoryImpl implements FollowRepository{
         return (follow != null) ? new FollowDTO(follow) : null
     }
 
-    async getMutualFollowersByUserId(userId: string): Promise <UserDTO[]> {
+    async getMutualFollowersByUserId(userId: string): Promise <UserViewDTO[]> {
         const mutuals = await this.db.user.findMany({
             where: {
               AND: [
                 {
-                  follows: {
+                  following: {
                     some: {
                       followedId: userId,
                     },
@@ -96,7 +96,7 @@ export class FollowRepositoryImpl implements FollowRepository{
               ],
             },
         });
-        return mutuals.map(mutual => new UserDTO(mutual))
+        return mutuals.map(mutual => new UserViewDTO(mutual))
     }
     
     async areMutualFollowers(userId: string, otherUserId: string): Promise <boolean>{
