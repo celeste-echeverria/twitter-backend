@@ -65,16 +65,14 @@ export class PostServiceImpl implements PostService {
       if (!canAccess) {
         throw new NotFoundException('Post');
       }
-  
-      let urls;
-      if (post.images && post.images.length > 0) {
-        const urlPromises = post.images.map(async (image) => {
+      
+      if (post.images) {
+        post.images = await Promise.all(post.images.map(async (image) => {
           return await getPresignedGetURL(image);
-        });
-        urls = await Promise.all(urlPromises);
+        }));
       }
   
-      return { ...post, images: urls };
+      return post;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException("getPost");
@@ -122,10 +120,23 @@ export class PostServiceImpl implements PostService {
         limit, after, before
       })
 
+      const processedPosts = await Promise.all(posts.map(async (post) => {
+        if(post.author.profilePicture) {
+          post.author.profilePicture = await getPresignedGetURL(post.author.profilePicture)
+        }
+        if (post.images) {
+          post.images = await Promise.all(post.images.map(async (image) => {
+            return await getPresignedGetURL(image);
+          }));
+        }
+        return post;
+      }));
+  
+
       const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : undefined;
 
       return {
-        posts: posts,
+        posts: processedPosts,
         nextCursor
       };
 
@@ -149,8 +160,17 @@ export class PostServiceImpl implements PostService {
 
       const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : undefined;
 
+      const processedPosts = await Promise.all(posts.map(async (post) => {
+        if (post.images) {
+          post.images = await Promise.all(post.images.map(async (image) => {
+            return await getPresignedGetURL(image);
+          }));
+        }
+        return post;
+      }));
+      
       return {
-        posts: posts,
+        posts: processedPosts,
         nextCursor
       };
 
@@ -176,10 +196,19 @@ export class PostServiceImpl implements PostService {
         before
       });
       
+      const processedPosts = await Promise.all(posts.map(async (post) => {
+        if (post.images) {
+          post.images = await Promise.all(post.images.map(async (image) => {
+            return await getPresignedGetURL(image);
+          }));
+        }
+        return post;
+      }));
+      
       const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : undefined;
 
       return {
-        posts: posts,
+        posts: processedPosts,
         nextCursor
       };
 
@@ -213,8 +242,16 @@ export class PostServiceImpl implements PostService {
   async getCommentsFromPost (userId: string, postId: string, options:{ limit?: number, before?: string, after?: string }): Promise <ExtendedPostDTO[] | []> {
     try {
       const replies = await this.postRepository.getCommentsByMainPostId(postId, options)
+      const processedReplies = await Promise.all(replies.map(async (reply) => {
+        if (reply.images) {
+          reply.images = await Promise.all(reply.images.map(async (image) => {
+            return await getPresignedGetURL(image);
+          }));
+        }
+        return reply;
+      }));
       
-      return replies
+      return processedReplies
     } catch (error) {
       if (error instanceof NotFoundException) throw error
       throw new InternalServerErrorException("getCommentsFromPost")

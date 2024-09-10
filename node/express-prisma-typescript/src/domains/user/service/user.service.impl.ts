@@ -66,15 +66,25 @@ export class UserServiceImpl implements UserService {
   
       // Elimina duplicados y filtra usuarios que ya sigo o mi propio ID
       recommendedUserIds = Array.from(new Set(recommendedUserIds))
-        .filter(
-          (recommendedUserId) =>
-            recommendedUserId !== userId && !followedUserIds.includes(recommendedUserId) // Filtrar aquellos que ya sigo
-        );
+      .filter(
+        (recommendedUserId) =>
+          recommendedUserId !== userId && !followedUserIds.includes(recommendedUserId) // Filtrar aquellos que ya sigo
+      );
   
-      return await this.userRepository.getRecommendedUsersPaginated(
+      let users = await this.userRepository.getRecommendedUsersPaginated(
         recommendedUserIds,
         options
       );
+      
+      users = await Promise.all(users.map(async (user) => {
+        if (user.profilePicture) {
+          user.profilePicture = await getPresignedGetURL(user.profilePicture);
+        }
+        return user;
+      }));
+
+      return users
+
     } catch (error) {
       throw new InternalServerErrorException("getUserRecommendations");
     }
@@ -147,6 +157,10 @@ export class UserServiceImpl implements UserService {
       if (!user) throw new NotFoundException("User")
 
       user.followedByActiveUser = await this.followService.userIsFollowing(userId, otherUserId)
+      
+      if (user.profilePicture) {
+        user.profilePicture = await getPresignedGetURL(user.profilePicture);
+      }
 
       return user
 
@@ -157,10 +171,17 @@ export class UserServiceImpl implements UserService {
     }
   }
 
-  async getUsersMatchingUsername(username: string, options: OffsetPagination): Promise <UserViewDTO[]> {
+  async getUsersMatchingUsername(username: string, options?: OffsetPagination): Promise <UserViewDTO[]> {
     try {
-      const users = await this.userRepository.getUsersMatchingUsername(username, options)
-      return users
+      console.log('SEARCHING', username)
+      const users = await this.userRepository.getUsersMatchingUsername(username, options || {})
+      const usersWithPicture = await Promise.all(users.map(async (user) => {
+        if (user.profilePicture) {
+          user.profilePicture = await getPresignedGetURL(user.profilePicture);
+        }
+        return user;
+      }));
+      return usersWithPicture ?? []
     } catch (error) {
       throw new InternalServerErrorException("getUsersMatchingUsername")
     }
@@ -170,6 +191,9 @@ export class UserServiceImpl implements UserService {
     try {
     
       const user = await this.userRepository.getViewById(otherUserId)
+      if (user && user.profilePicture) {
+        user.profilePicture = await getPresignedGetURL(user.profilePicture);
+      }
       return user ?? null
 
     } catch (error: any) {      

@@ -57,6 +57,15 @@ userRouter.delete('/del', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK)
 })
 
+userRouter.get('/search', async(req: Request, res: Response) => {
+  const { query } = req.query
+  if (!query || typeof query !== 'string') return res.status(HttpStatus.OK).json([])
+  const users = await service.getUsersMatchingUsername(query)
+  console.log(users)
+  return res.status(HttpStatus.OK).json(users)
+})
+
+
 userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
   const { limit, skip } = req.query as Record<string, string>
   const { username } = req.params
@@ -73,6 +82,7 @@ userRouter.get('/:userId', async (req: Request, res: Response) => {
   console.log(userview)
   return res.status(HttpStatus.OK).json(userview)
 })
+
 
 /**
  * @swagger

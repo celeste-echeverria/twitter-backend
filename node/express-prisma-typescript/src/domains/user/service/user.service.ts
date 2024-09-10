@@ -15,6 +15,6 @@ export interface UserService {
   getProfileDownloadUrl: (userId: string) => Promise<string> 
   getExtendedUserView: (userId: string, otherUserId: string) => Promise <UserViewWithFollowStatusDTO> 
   getUserView: (userId: string, otherUserId: string) => Promise <UserViewDTO | null>
-  getUsersMatchingUsername: (username: string, options: OffsetPagination) => Promise <UserViewDTO[]>
+  getUsersMatchingUsername: (username: string, options?: OffsetPagination) => Promise <UserViewDTO[]>
 
 }
